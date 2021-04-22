@@ -4,7 +4,8 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
-    "serve": "vite preview"
+    "serve": "vite preview",
+    "prepare": "husky install"
   },
   "dependencies": {
     "clsx": "^1.1.1",
@@ -28,10 +29,5 @@
     "vite": "^2.1.5",
     "vite-plugin-windicss": "^0.14.6",
     "windicss": "^2.5.14"
-  },
-  "husky": {
-    "hooks": {
-      "pre-commit": "pretty-quick --staged"
-    }
   }
 }
