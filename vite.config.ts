@@ -12,7 +12,7 @@ export default defineConfig({
   build: {
     rollupOptions: {
       plugins: [
-        visualizer()
+        visualizer({ template: 'network' })
       ]
     }
   }

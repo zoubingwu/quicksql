@@ -233,6 +233,11 @@
     "@nodelib/fs.scandir" "2.1.4"
     fastq "^1.6.0"
 
+"@types/highlightjs@^9.12.1":
+  version "9.12.1"
+  resolved "https://registry.npm.taobao.org/@types/highlightjs/download/@types/highlightjs-9.12.1.tgz#c2692a1fe91441bcd63279d52c1ea245a485e904"
+  integrity sha1-wmkqH+kUQbzWMnnVLB6iRaSF6QQ=
+
 "@types/minimatch@^3.0.3":
   version "3.0.4"
   resolved "https://registry.npm.taobao.org/@types/minimatch/download/@types/minimatch-3.0.4.tgz?cache=0&other_urls=https%3A%2F%2Fregistry.npm.taobao.org%2F%40types%2Fminimatch%2Fdownload%2F%40types%2Fminimatch-3.0.4.tgz#f0ec25dbf2f0e4b18647313ac031134ca5b24b21"
@@ -395,6 +400,11 @@ cliui@^7.0.2:
     string-width "^4.2.0"
     strip-ansi "^6.0.0"
     wrap-ansi "^7.0.0"
+
+clsx@^1.1.1:
+  version "1.1.1"
+  resolved "https://registry.nlark.com/clsx/download/clsx-1.1.1.tgz#98b3134f9abbdf23b2663491ace13c5c03a73188"
+  integrity sha1-mLMTT5q73yOyZjSRrOE8XAOnMYg=
 
 color-convert@^1.9.0:
   version "1.9.3"
@@ -624,6 +634,11 @@ has@^1.0.3:
   dependencies:
     function-bind "^1.1.1"
 
+highlight.js@^10.7.2:
+  version "10.7.2"
+  resolved "https://registry.npm.taobao.org/highlight.js/download/highlight.js-10.7.2.tgz#89319b861edc66c48854ed1e6da21ea89f847360"
+  integrity sha1-iTGbhh7cZsSIVO0ebaIeqJ+Ec2A=
+
 human-signals@^1.1.1:
   version "1.1.1"
   resolved "https://registry.npm.taobao.org/human-signals/download/human-signals-1.1.1.tgz#c5b1cd14f50aeae09ab6c59fe63ba3395fe4dfa3"
@@ -852,6 +867,11 @@ onetime@^5.1.0:
   dependencies:
     mimic-fn "^2.1.0"
 
+open-color@^1.8.0:
+  version "1.8.0"
+  resolved "https://registry.nlark.com/open-color/download/open-color-1.8.0.tgz#fb6d76105b08de39bff7a06535eca8e63b65b725"
+  integrity sha1-+212EFsI3jm/96BlNeyo5jtltyU=
+
 open@^7.4.2:
   version "7.4.2"
   resolved "https://registry.npm.taobao.org/open/download/open-7.4.2.tgz?cache=0&sync_timestamp=1618549241971&other_urls=https%3A%2F%2Fregistry.npm.taobao.org%2Fopen%2Fdownload%2Fopen-7.4.2.tgz#b8147e26dcf3e426316c730089fd71edd29c2321"
@@ -878,6 +898,11 @@ p-try@^2.0.0:
   version "2.2.0"
   resolved "https://registry.npm.taobao.org/p-try/download/p-try-2.2.0.tgz#cb2868540e313d61de58fafbe35ce9004d5540e6"
   integrity sha1-yyhoVA4xPWHeWPr741zpAE1VQOY=
+
+path-data-parser@0.1.0, path-data-parser@^0.1.0:
+  version "0.1.0"
+  resolved "https://registry.nlark.com/path-data-parser/download/path-data-parser-0.1.0.tgz#8f5ba5cc70fc7becb3dcefaea08e2659aba60b8c"
+  integrity sha1-j1ulzHD8e+yz3O+uoI4mWaumC4w=
 
 path-exists@^4.0.0:
   version "4.0.0"
@@ -910,6 +935,19 @@ pirates@^4.0.1:
   integrity sha1-ZDqSyviUVm+RsrmG0sZpUKji+4c=
   dependencies:
     node-modules-regexp "^1.0.0"
+
+points-on-curve@0.2.0, points-on-curve@^0.2.0:
+  version "0.2.0"
+  resolved "https://registry.nlark.com/points-on-curve/download/points-on-curve-0.2.0.tgz#7dbb98c43791859434284761330fa893cb81b4d1"
+  integrity sha1-fbuYxDeRhZQ0KEdhMw+ok8uBtNE=
+
+points-on-path@^0.2.1:
+  version "0.2.1"
+  resolved "https://registry.nlark.com/points-on-path/download/points-on-path-0.2.1.tgz#553202b5424c53bed37135b318858eacff85dd52"
+  integrity sha1-VTICtUJMU77TcTWzGIWOrP+F3VI=
+  dependencies:
+    path-data-parser "0.1.0"
+    points-on-curve "0.2.0"
 
 postcss@^8.2.1:
   version "8.2.10"
@@ -1006,6 +1044,15 @@ rollup@^2.38.5:
   integrity sha1-j7hZF8nzVgVyDpIyjzzL+6b3i0g=
   optionalDependencies:
     fsevents "~2.3.1"
+
+roughjs@^4.3.1:
+  version "4.3.1"
+  resolved "https://registry.npm.taobao.org/roughjs/download/roughjs-4.3.1.tgz#b7af0b205c94bc3b79ee5a7eae1e09d5063bc3fe"
+  integrity sha1-t68LIFyUvDt57lp+rh4J1QY7w/4=
+  dependencies:
+    path-data-parser "^0.1.0"
+    points-on-curve "^0.2.0"
+    points-on-path "^0.2.1"
 
 run-parallel@^1.1.9:
   version "1.2.0"

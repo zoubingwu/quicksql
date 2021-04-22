@@ -7,10 +7,16 @@
     "serve": "vite preview"
   },
   "dependencies": {
+    "clsx": "^1.1.1",
+    "highlight.js": "^10.7.2",
+    "open-color": "^1.8.0",
+    "points-on-curve": "^0.2.0",
     "react": "^17.0.0",
-    "react-dom": "^17.0.0"
+    "react-dom": "^17.0.0",
+    "roughjs": "^4.3.1"
   },
   "devDependencies": {
+    "@types/highlightjs": "^9.12.1",
     "@types/react": "^17.0.0",
     "@types/react-dom": "^17.0.0",
     "@vitejs/plugin-react-refresh": "^1.3.1",
