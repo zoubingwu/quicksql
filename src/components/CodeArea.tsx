@@ -1,5 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 
+import "highlight.js/styles/github-gist.css";
+
 const code = `// This file was generated from JSON Schema using quicktype, do not modify it directly.
 // To parse and unparse this JSON data, add this code to your project and do:
 //
@@ -66,9 +68,7 @@ const Highlight: React.FC<{
     }
   }, [language]);
 
-  useEffect(() => {
-    import("highlight.js/styles/github-gist.css");
-  }, []);
+  useEffect(() => {}, []);
 
   return (
     <pre className="flex-1">
