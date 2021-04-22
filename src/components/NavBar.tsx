@@ -1,7 +1,5 @@
-import React from 'react';
+import React from "react";
 
 export function NavBar() {
-  return (
-    <div>nav</div>
-  )
+  return <div>QUICK SQL</div>;
 }
