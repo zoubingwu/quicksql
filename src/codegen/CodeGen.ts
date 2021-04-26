@@ -1,7 +1,10 @@
-export abstract class CodeGen {
-  emitLine(line: string) {}
+export interface CodeGen {
+  language: string;
+  name: string;
 
-  emit() {
-    throw new Error("should implement codeGen method");
-  }
+  emitLine?(line: string): void;
+  emitComment?(c: string): void;
+  emit(): string;
+
+  hljsImport(): Promise<typeof import("highlight.js/lib/languages/*")>;
 }
