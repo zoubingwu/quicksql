@@ -8,12 +8,18 @@
     "prepare": "husky install"
   },
   "dependencies": {
+    "@chakra-ui/react": "^1.6.0",
+    "@emotion/react": "^11",
+    "@emotion/styled": "^11",
+    "@reduxjs/toolkit": "^1.5.1",
     "clsx": "^1.1.1",
+    "framer-motion": "^4",
     "highlight.js": "^10.7.2",
     "open-color": "^1.8.0",
     "points-on-curve": "^0.2.0",
     "react": "^17.0.0",
     "react-dom": "^17.0.0",
+    "react-redux": "^7.2.4",
     "roughjs": "^4.3.1"
   },
   "devDependencies": {
