@@ -1,4 +1,4 @@
-export interface CodeGen {
+export interface TargetLanguage {
   language: string;
   name: string;
 
