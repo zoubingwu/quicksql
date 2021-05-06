@@ -1,10 +1,10 @@
 import { TargetLanguage } from "./TargetLanguage";
 
 export class NodejsTypeORM implements TargetLanguage {
-  language = "javascript" as const;
-  name = "Nodejs/TypeORM" as const;
+  language = "javascript";
+  name = "Nodejs/TypeORM";
 
-  hljsImport = () => import("highlight.js/lib/languages/javascript");
+  hlImports = () => import("prismjs/components/prism-javascript");
 
   emit() {
     return `import {Entity, PrimaryGeneratedColumn, Column} from "typeorm";

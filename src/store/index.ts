@@ -1,11 +1,12 @@
 import { configureStore } from "@reduxjs/toolkit";
 import { TypedUseSelectorHook, useDispatch, useSelector } from "react-redux";
-
+import { diagramSlice } from "./diagram";
 import { targetSlice } from "./target";
 
 export const store = configureStore({
   reducer: {
     target: targetSlice.reducer,
+    diagram: diagramSlice.reducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
