@@ -7,7 +7,7 @@ import { OptionBoard } from "./OptionBoard";
 import { Button } from "./UIKit";
 import { pickTarget } from "../store/target";
 
-import "prismjs/themes/prism.css";
+import "prismjs/themes/prism-tomorrow.css";
 
 export const CodeArea: React.FC = () => {
   const [content, setContent] = useState("");
