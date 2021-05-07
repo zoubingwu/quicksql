@@ -1,8 +1,9 @@
 import { SQLTarget } from "./SQL";
 import { NodejsTypeORM } from "./NodejsTypeORM";
 import { TargetLanguage } from "./TargetLanguage";
+import { NodejsPrisma } from "./NodejsPrisma";
 
-export const all = [new SQLTarget(), new NodejsTypeORM()];
+export const all = [new SQLTarget(), new NodejsTypeORM(), new NodejsPrisma()];
 
 type AllTargetMap = Record<string, TargetLanguage>;
 

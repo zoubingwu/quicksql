@@ -8,9 +8,9 @@ import { CodeArea } from "./components/CodeArea";
 function App() {
   return (
     <Provider store={store}>
-      <div className="flex flex-col h-screen">
+      <div className="flex flex-col h-screen overflow-hidden">
         <NavBar />
-        <div className="flex flex-row flex-1">
+        <div className="flex flex-row flex-1 h-full">
           <DiagramEditor />
           <CodeArea />
         </div>

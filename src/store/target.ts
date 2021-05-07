@@ -16,7 +16,10 @@ export const targetSlice = createSlice({
   initialState,
   reducers: {
     pickTarget(state, action) {
-      state.current = allTargets[action.payload];
+      const nextTarget = allTargets[action.payload];
+      if (nextTarget) {
+        state.current = nextTarget;
+      }
     },
   },
 });

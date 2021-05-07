@@ -1,53 +1,63 @@
-/// <reference path="../typings.d.ts"/>
-
-import React, { useEffect, useMemo } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import Prism from "prismjs";
 
-import { useAppSelector } from "../store";
-import { TargetLanguage } from "../codegen/TargetLanguage";
+import { useAppDispatch, useAppSelector } from "../store";
+import { all } from "../codegen";
 import { OptionBoard } from "./OptionBoard";
 import { Button } from "./UIKit";
+import { pickTarget } from "../store/target";
 
 import "prismjs/themes/prism.css";
 
-const Highlight: React.FC<{
-  content: string;
-  target: TargetLanguage;
-}> = ({ content, target }) => {
+export const CodeArea: React.FC = () => {
+  const [content, setContent] = useState("");
+  const currentTarget = useAppSelector((state) => state.target.current);
+  const dispatch = useAppDispatch();
+
+  const handleTargetChange = useCallback(
+    (e: React.ChangeEvent<HTMLSelectElement>) => {
+      dispatch(pickTarget(e.target.value));
+    },
+    []
+  );
+
+  const handleCodeGenerate = useCallback(async () => {
+    const c = currentTarget.emit();
+    if (!(currentTarget.language in Prism.languages)) {
+      await currentTarget.hlImports();
+    }
+    setContent(c);
+  }, [currentTarget]);
+
   useEffect(() => {
-    (async function () {
-      if (!(target.language in Prism.languages)) {
-        await target.hlImports();
-      }
-      Prism.highlightAll();
-    })();
+    handleCodeGenerate();
   }, []);
 
-  return (
-    <pre className="h-full !m-0">
-      <code className={`language-${target.language}`}>{content}</code>
-    </pre>
-  );
-};
-
-export const CodeArea: React.FC = () => {
-  const currentTarget = useAppSelector((state) => state.target.current);
-  const content = useMemo(() => currentTarget.emit(), [currentTarget]);
+  useEffect(() => {
+    Prism.highlightAll();
+  }, [content]);
 
   return (
-    <div className="flex-auto w-1/2 relative">
-      <Highlight content={content} target={currentTarget} />
+    <div className="flex-shrink-0 flex-grow-0 w-1/2 relative">
+      <pre className="h-full !m-0">
+        <code className={`language-${currentTarget.language}`}>{content}</code>
+      </pre>
 
       <OptionBoard>
-        <div>
+        <div className="mb-2">
           <span>Target: </span>
-          <select name="" id="">
-            <option value="sql">SQL</option>
-            <option value="sql">NodejsTypeORM</option>
+          <select onChange={handleTargetChange}>
+            {all.map((i) => (
+              <option value={i.name} key={i.name}>
+                {i.name}
+              </option>
+            ))}
           </select>
         </div>
         <div>
-          <Button className="w-full">Generate Code</Button>
+          <Button className="w-full" onClick={handleCodeGenerate}>
+            Generate Code
+          </Button>
         </div>
       </OptionBoard>
     </div>

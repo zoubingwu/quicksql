@@ -1,26 +1,40 @@
-export type DataType = "int" | "varchar";
+export type DataType = "int" | "varchar" | "datetime";
 
-export class Column {
-  name: string;
-  type: DataType;
-
+export interface Constraint {
   /**
    * NOT NULL
    */
-  nn: boolean;
+  nn?: boolean;
 
   /**
    * PRIMARY KEY
    */
-  pk: boolean;
+  pk?: boolean;
 
   /**
    * UNIQUE
    */
-  un: boolean;
+  un?: boolean;
 
   /**
    * AUTO INCREMENT
    */
-  ai: boolean;
+  ai?: boolean;
+}
+
+export class Column implements Constraint {
+  nn: boolean = false;
+  pk: boolean = false;
+  un: boolean = false;
+  ai: boolean = false;
+
+  length?: number;
+
+  constructor(
+    public name: string,
+    public type: DataType,
+    constraint?: Constraint
+  ) {
+    Object.assign(this, constraint);
+  }
 }
