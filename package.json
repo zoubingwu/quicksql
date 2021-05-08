@@ -1,13 +1,17 @@
 {
   "name": "quicksql",
-  "version": "0.0.0",
+  "version": "0.1.0",
+  "license": "MIT",
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
     "serve": "vite preview",
-    "prepare": "husky install"
+    "prepare": "husky install",
+    "css:analysis": "windicss-analysis"
   },
   "dependencies": {
+    "@blueprintjs/core": "^4.0.0-alpha.0",
+    "@blueprintjs/icons": "4.0.0-alpha.0",
     "@reduxjs/toolkit": "^1.5.1",
     "clsx": "^1.1.1",
     "open-color": "^1.8.0",
@@ -31,6 +35,7 @@
     "typescript": "^4.1.2",
     "vite": "^2.1.5",
     "vite-plugin-windicss": "^0.14.6",
-    "windicss": "^2.5.14"
+    "windicss": "^2.5.14",
+    "windicss-analysis": "^0.2.0"
   }
 }
