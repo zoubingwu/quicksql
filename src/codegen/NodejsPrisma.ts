@@ -1,10 +1,10 @@
 import { TargetLanguage } from "./TargetLanguage";
 
-export class NodejsPrisma implements TargetLanguage {
+export class NodejsPrisma extends TargetLanguage {
   language = "prisma";
   name = "Nodejs/Prisma";
 
-  hlImports = () => import("../custom/prism-prisma");
+  hlImports = () => import("../prism-extend/prism-prisma");
 
   emit() {
     return `datasource db {
