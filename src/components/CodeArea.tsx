@@ -1,17 +1,20 @@
 import React, { useCallback, useEffect, useState } from "react";
 import Prism from "prismjs";
+import { Button, HTMLSelect, Tab, Tabs } from "@blueprintjs/core";
 
 import { useAppDispatch, useAppSelector } from "../store";
 import { all } from "../codegen";
-import { OptionBoard } from "./OptionBoard";
-import { Button } from "./UIKit";
 import { pickTarget } from "../store/target";
 
 import "prismjs/themes/prism-tomorrow.css";
 
 export const CodeArea: React.FC = () => {
   const [content, setContent] = useState("");
+  const [currentTabId, setCurrentTabId] = useState<"target" | "format">(
+    "target"
+  );
   const currentTarget = useAppSelector((state) => state.target.current);
+  const tables = useAppSelector((state) => state.diagram.tables);
   const dispatch = useAppDispatch();
 
   const handleTargetChange = useCallback(
@@ -22,12 +25,16 @@ export const CodeArea: React.FC = () => {
   );
 
   const handleCodeGenerate = useCallback(async () => {
-    const c = currentTarget.emit();
+    const c = currentTarget.emit(tables);
     if (!(currentTarget.language in Prism.languages)) {
       await currentTarget.hlImports();
     }
     setContent(c);
-  }, [currentTarget]);
+  }, [currentTarget, tables]);
+
+  const handleTabChange = useCallback((id: "target" | "format") => {
+    setCurrentTabId(id);
+  }, []);
 
   useEffect(() => {
     handleCodeGenerate();
@@ -43,23 +50,37 @@ export const CodeArea: React.FC = () => {
         <code className={`language-${currentTarget.language}`}>{content}</code>
       </pre>
 
-      <OptionBoard>
-        <div className="mb-2">
-          <span>Target: </span>
-          <select onChange={handleTargetChange}>
-            {all.map((i) => (
-              <option value={i.name} key={i.name}>
-                {i.name}
-              </option>
-            ))}
-          </select>
-        </div>
-        <div>
-          <Button className="w-full" onClick={handleCodeGenerate}>
-            Generate Code
-          </Button>
-        </div>
-      </OptionBoard>
+      <Tabs
+        selectedTabId={currentTabId}
+        onChange={handleTabChange}
+        className="absolute right-4 top-4 bg-white p-2 shadow border rounded-md min-w-48 max-w-72"
+      >
+        <Tab
+          id="target"
+          title="Target"
+          panel={
+            <div>
+              <div className="mb-2">
+                <HTMLSelect onChange={handleTargetChange} className="w-full">
+                  {all.map((i) => (
+                    <option value={i.name} key={i.name}>
+                      {i.name}
+                    </option>
+                  ))}
+                </HTMLSelect>
+              </div>
+
+              <div className="mb-2">
+                <Button className="w-full" onClick={handleCodeGenerate}>
+                  Generate Code
+                </Button>
+              </div>
+            </div>
+          }
+        />
+
+        <Tab id="format" title="Format" panel={<div></div>} />
+      </Tabs>
     </div>
   );
 };

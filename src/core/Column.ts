@@ -1,32 +1,32 @@
-export type DataType = "int" | "varchar" | "datetime";
+import { DataType } from "./DataType";
 
 export interface Constraint {
   /**
    * NOT NULL
    */
-  nn?: boolean;
+  NN?: boolean;
 
   /**
    * PRIMARY KEY
    */
-  pk?: boolean;
+  PK?: boolean;
 
   /**
    * UNIQUE
    */
-  un?: boolean;
+  UN?: boolean;
 
   /**
    * AUTO INCREMENT
    */
-  ai?: boolean;
+  AI?: boolean;
 }
 
 export class Column implements Constraint {
-  nn: boolean = false;
-  pk: boolean = false;
-  un: boolean = false;
-  ai: boolean = false;
+  NN: boolean = false;
+  PK: boolean = false;
+  UN: boolean = false;
+  AI: boolean = false;
 
   length?: number;
 

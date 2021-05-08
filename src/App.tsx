@@ -5,6 +5,9 @@ import { DiagramEditor } from "./components/DiagramEditor";
 import { store } from "./store";
 import { CodeArea } from "./components/CodeArea";
 
+import "@blueprintjs/core/lib/css/blueprint.css";
+import "@blueprintjs/icons/lib/css/blueprint-icons.css";
+
 function App() {
   return (
     <Provider store={store}>

@@ -1,6 +1,6 @@
 import { TargetLanguage } from "./TargetLanguage";
 
-export class NodejsTypeORM implements TargetLanguage {
+export class NodejsTypeORM extends TargetLanguage {
   language = "javascript";
   name = "Nodejs/TypeORM";
 
