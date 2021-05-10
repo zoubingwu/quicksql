@@ -16,6 +16,7 @@ export const CodeArea: React.FC = () => {
   const [currentTabId, setCurrentTabId] = useState<TabId>("target");
   const currentTarget = useAppSelector((state) => state.target.current);
   const tables = useAppSelector((state) => state.diagram.tables);
+  const showOptions = useAppSelector((state) => state.target.showOptions);
   const { hasCopied, onCopy } = useClipboard(content);
   const dispatch = useAppDispatch();
 
@@ -40,7 +41,7 @@ export const CodeArea: React.FC = () => {
 
   useEffect(() => {
     handleCodeGenerate();
-  }, [tables]);
+  }, [tables, currentTarget]);
 
   useEffect(() => {
     Prism.highlightAll();
@@ -52,37 +53,39 @@ export const CodeArea: React.FC = () => {
         <code className={`language-${currentTarget.language}`}>{content}</code>
       </pre>
 
-      <Tabs
-        selectedTabId={currentTabId}
-        onChange={handleTabChange}
-        className="absolute right-4 top-4 bg-white p-2 shadow border rounded-md min-w-48 max-w-72"
-      >
-        <Tab
-          id="target"
-          title="Target"
-          panel={
-            <div>
-              <div className="mb-2">
-                <HTMLSelect onChange={handleTargetChange} className="w-full">
-                  {all.map((i) => (
-                    <option value={i.name} key={i.name}>
-                      {i.name}
-                    </option>
-                  ))}
-                </HTMLSelect>
-              </div>
+      {showOptions && (
+        <Tabs
+          selectedTabId={currentTabId}
+          onChange={handleTabChange}
+          className="absolute right-4 top-4 bg-white p-2 shadow border rounded-md min-w-48 max-w-72"
+        >
+          <Tab
+            id="target"
+            title="Target"
+            panel={
+              <div>
+                <div className="mb-2">
+                  <HTMLSelect onChange={handleTargetChange} className="w-full">
+                    {all.map((i) => (
+                      <option value={i.name} key={i.name}>
+                        {i.name}
+                      </option>
+                    ))}
+                  </HTMLSelect>
+                </div>
 
-              <div className="mb-2">
-                <Button className="w-full" onClick={onCopy}>
-                  {hasCopied ? "Copied!" : "Copy Code"}
-                </Button>
+                <div className="mb-2">
+                  <Button className="w-full" onClick={onCopy}>
+                    {hasCopied ? "Copied!" : "Copy Code"}
+                  </Button>
+                </div>
               </div>
-            </div>
-          }
-        />
+            }
+          />
 
-        <Tab id="format" title="Format" panel={<div></div>} />
-      </Tabs>
+          <Tab id="format" title="Format" panel={<div></div>} />
+        </Tabs>
+      )}
     </div>
   );
 };

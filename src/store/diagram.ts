@@ -9,6 +9,7 @@ interface DiagramState {
 }
 
 export const defaultPosition = { x: 50, y: 50 };
+
 const createTable = () =>
   new Table(
     "users",
