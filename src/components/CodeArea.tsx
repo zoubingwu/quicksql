@@ -5,6 +5,7 @@ import { Button, HTMLSelect, Tab, Tabs } from "@blueprintjs/core";
 import { useAppDispatch, useAppSelector } from "../store";
 import { all } from "../codegen";
 import { pickTarget } from "../store/target";
+import { useClipboard } from "../hooks/useClipboard";
 
 import "prismjs/themes/prism-tomorrow.css";
 
@@ -15,6 +16,7 @@ export const CodeArea: React.FC = () => {
   const [currentTabId, setCurrentTabId] = useState<TabId>("target");
   const currentTarget = useAppSelector((state) => state.target.current);
   const tables = useAppSelector((state) => state.diagram.tables);
+  const { hasCopied, onCopy } = useClipboard(content);
   const dispatch = useAppDispatch();
 
   const handleTargetChange = useCallback(
@@ -68,6 +70,12 @@ export const CodeArea: React.FC = () => {
                     </option>
                   ))}
                 </HTMLSelect>
+              </div>
+
+              <div className="mb-2">
+                <Button className="w-full" onClick={onCopy}>
+                  {hasCopied ? "Copied!" : "Copy Code"}
+                </Button>
               </div>
             </div>
           }
