@@ -38,7 +38,7 @@ export const CodeArea: React.FC = () => {
 
   useEffect(() => {
     handleCodeGenerate();
-  }, []);
+  }, [tables]);
 
   useEffect(() => {
     Prism.highlightAll();
@@ -68,12 +68,6 @@ export const CodeArea: React.FC = () => {
                     </option>
                   ))}
                 </HTMLSelect>
-              </div>
-
-              <div className="mb-2">
-                <Button className="w-full" onClick={handleCodeGenerate}>
-                  Generate Code
-                </Button>
               </div>
             </div>
           }
