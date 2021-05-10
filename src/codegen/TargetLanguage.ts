@@ -47,5 +47,5 @@ export abstract class TargetLanguage {
     this.emitNewLine();
   }
 
-  public abstract emit(tables: Table[]): string;
+  public abstract emit(tables: Record<string, Table>): string;
 }

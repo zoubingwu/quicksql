@@ -1,3 +1,5 @@
+import { immerable, produce } from "immer";
+import shortId from "short-uuid";
 import { DataType } from "./DataType";
 
 export interface Constraint {
@@ -23,12 +25,14 @@ export interface Constraint {
 }
 
 export class Column implements Constraint {
-  NN: boolean = false;
-  PK: boolean = false;
-  UN: boolean = false;
-  AI: boolean = false;
+  private [immerable] = true;
 
-  length?: number;
+  public NN: boolean = false;
+  public PK: boolean = false;
+  public UN: boolean = false;
+  public AI: boolean = false;
+  public id: string;
+  public length?: number;
 
   constructor(
     public name: string,
@@ -36,5 +40,12 @@ export class Column implements Constraint {
     constraint?: Constraint
   ) {
     Object.assign(this, constraint);
+    this.id = shortId.generate();
+  }
+
+  setName(name: string) {
+    return produce(this, (draft) => {
+      draft.name = name;
+    });
   }
 }

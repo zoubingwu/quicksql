@@ -17,8 +17,8 @@ export const DiagramEditor: React.FC = () => {
       <Tooltip content="Add New Table" className="absolute right-4 top-4">
         <Button icon="cube-add" onClick={handleAddTableButtonClick} />
       </Tooltip>
-      {tables.map((t) => (
-        <TableCard data={t} key={t.name} />
+      {Object.values(tables).map((t) => (
+        <TableCard data={t} key={t.id} />
       ))}
     </div>
   );

@@ -7,8 +7,10 @@ export class SQLTarget extends TargetLanguage {
 
   hlImports = () => import("prismjs/components/prism-sql");
 
-  emit(tables: Table[]) {
+  emit(tableRecords: Record<string, Table>) {
     this.content = "";
+
+    const tables = Object.values(tableRecords);
 
     tables.forEach((table) => {
       this.emitCodeLine(`CREATE TABLE ${table.name} (`);

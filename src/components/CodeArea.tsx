@@ -8,11 +8,11 @@ import { pickTarget } from "../store/target";
 
 import "prismjs/themes/prism-tomorrow.css";
 
+type TabId = "target" | "format";
+
 export const CodeArea: React.FC = () => {
   const [content, setContent] = useState("");
-  const [currentTabId, setCurrentTabId] = useState<"target" | "format">(
-    "target"
-  );
+  const [currentTabId, setCurrentTabId] = useState<TabId>("target");
   const currentTarget = useAppSelector((state) => state.target.current);
   const tables = useAppSelector((state) => state.diagram.tables);
   const dispatch = useAppDispatch();
@@ -32,7 +32,7 @@ export const CodeArea: React.FC = () => {
     setContent(c);
   }, [currentTarget, tables]);
 
-  const handleTabChange = useCallback((id: "target" | "format") => {
+  const handleTabChange = useCallback((id: TabId) => {
     setCurrentTabId(id);
   }, []);
 
