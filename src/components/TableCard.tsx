@@ -48,7 +48,6 @@ export const TableCard: React.FC<{
   );
 
   const handleMoveToTopLayer = useCallback(() => {
-    console.log("handleMoveToTopLayer");
     dispatch(setTopLayer(id));
   }, [id]);
 
