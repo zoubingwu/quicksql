@@ -9,7 +9,7 @@ export abstract class TargetLanguage {
 
   public abstract hlImports(): Promise<any>;
 
-  protected emitWhiteSpace(n: number = 1) {
+  protected emitWhiteSpace(n = 1) {
     this.content += " ".repeat(n);
   }
 
@@ -18,8 +18,8 @@ export abstract class TargetLanguage {
     this.content += ",";
   }
 
-  protected emitNewLine() {
-    this.content += "\n";
+  protected emitNewLine(n = 1) {
+    this.content += "\n".repeat(n);
   }
 
   protected emitCode(code: string) {

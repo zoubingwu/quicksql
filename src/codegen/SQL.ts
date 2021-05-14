@@ -47,8 +47,7 @@ export class SQLTarget extends TargetLanguage {
       });
 
       this.emitCode(");");
-      this.emitNewLine();
-      this.emitNewLine();
+      this.emitNewLine(2);
     });
 
     return this.content;
