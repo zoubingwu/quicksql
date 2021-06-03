@@ -10,7 +10,7 @@ interface GlobalState {
 
 const initialState: GlobalState = {
   currentTarget: new SQLTarget(),
-  showCode: true,
+  showCode: false,
 };
 
 export const globalOptionsSlice = createSlice({
