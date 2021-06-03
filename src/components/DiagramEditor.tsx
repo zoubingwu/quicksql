@@ -1,25 +1,48 @@
 import React, { useCallback } from "react";
-import { Button, Tooltip } from "@blueprintjs/core";
-import { useAppDispatch, useAppSelector } from "../store";
-import { addTable } from "../store/diagram";
+import clsx from "clsx";
+import { ContextMenu, Menu, MenuItem } from "@blueprintjs/core";
+import { useAppDispatch, useAppSelector, actions } from "../store";
 import { TableCard } from "./TableCard";
+import { PropertyEditor } from "./PropertyEditor";
 
 export const DiagramEditor: React.FC = () => {
   const tables = useAppSelector((state) => state.diagram.tables);
+  const showCode = useAppSelector((state) => state.globalOptions.showCode);
   const dispatch = useAppDispatch();
 
-  const handleAddTableButtonClick = useCallback(() => {
-    dispatch(addTable());
+  const handleAddTable = useCallback(() => {
+    dispatch(actions.addTable());
+  }, []);
+
+  const handleClickEmptyArea = useCallback(() => {
+    dispatch(actions.setSelected(null));
   }, []);
 
   return (
-    <div className="flex-shrink-0 flex-grow-0 relative w-1/2">
-      <Tooltip content="Add New Table" className="absolute right-4 top-4">
-        <Button icon="cube-add" onClick={handleAddTableButtonClick} />
-      </Tooltip>
-      {Object.values(tables).map((t) => (
-        <TableCard data={t} key={t.id} />
-      ))}
+    <div
+      className={clsx(
+        "diagram-editor flex-shrink-0 flex-grow-0 overflow-hidden relative transition-all",
+        showCode ? "w-2/3" : "w-full"
+      )}
+      onClick={handleClickEmptyArea}
+    >
+      <ContextMenu
+        className="w-full h-full"
+        content={
+          <Menu>
+            <MenuItem
+              text="Add Table"
+              onClick={handleAddTable}
+              icon="duplicate"
+            />
+          </Menu>
+        }
+      >
+        {Object.values(tables).map((t) => (
+          <TableCard data={t} key={t.id} />
+        ))}
+        <PropertyEditor />
+      </ContextMenu>
     </div>
   );
 };

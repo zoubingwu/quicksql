@@ -1,6 +1,6 @@
 import React, { useCallback } from "react";
+import { EditableText } from "@blueprintjs/core";
 import { Column } from "../core/Column";
-import { EditableText } from "./EditableText";
 
 export const ColumnCell: React.FC<{
   data: Column;
@@ -10,15 +10,16 @@ export const ColumnCell: React.FC<{
   const { id, name } = data;
 
   const handleNameChange = useCallback(
-    (name: string) => {
+    (value: string) => {
+      if (value === name) return;
       onNameChange(tableId, id, name);
     },
     [tableId, id]
   );
 
   return (
-    <div className="px-2 py-1">
-      <EditableText value={name} onChange={handleNameChange} />
+    <div className="px-2 py-1 flex flex-row items-center justify-between">
+      <EditableText defaultValue={name} onConfirm={handleNameChange} />
     </div>
   );
 };

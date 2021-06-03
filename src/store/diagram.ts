@@ -6,6 +6,7 @@ import { Position, Table } from "../core/Table";
 interface DiagramState {
   tables: Record<string, Table>;
   layers: number;
+  selectedTable: string | null;
 }
 
 export const defaultPosition = { x: 50, y: 50 };
@@ -28,16 +29,32 @@ const initialState: DiagramState = {
     [defaultTable.id]: defaultTable,
   },
   layers: 1,
+  selectedTable: null,
 };
+
+function isCloseEnough(a: Position, b: Position): boolean {
+  return Math.abs(a.x - b.x) <= 10 && Math.abs(a.y - b.y) <= 10;
+}
 
 export const diagramSlice = createSlice({
   name: "diagram",
   initialState,
   reducers: {
     addTable(state) {
-      const defaultTable = createTable().setLayer(state.layers + 1);
-      state.tables[defaultTable.id] = defaultTable;
-      state.layers = defaultTable.layer;
+      let newTable = createTable().setLayer(state.layers + 1);
+      const currentTables = Object.values(state.tables);
+
+      while (
+        currentTables.some((t) => isCloseEnough(t.position, newTable.position))
+      ) {
+        newTable = newTable.setPosition({
+          x: newTable.position.x + 50,
+          y: newTable.position.y + 50,
+        });
+      }
+
+      state.tables[newTable.id] = newTable;
+      state.layers = newTable.layer;
     },
 
     updatePosition(
@@ -85,13 +102,11 @@ export const diagramSlice = createSlice({
         state.layers = layer;
       }
     },
+
+    setSelected(state, action: PayloadAction<string | null>) {
+      state.selectedTable = action.payload;
+    },
   },
 });
 
-export const {
-  addTable,
-  updatePosition,
-  updateTableName,
-  updateFiledName,
-  setTopLayer,
-} = diagramSlice.actions;
+export const actions = diagramSlice.actions;
