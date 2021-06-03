@@ -11,9 +11,9 @@ import "@blueprintjs/icons/lib/css/blueprint-icons.css";
 function App() {
   return (
     <Provider store={store}>
-      <div className="flex flex-col h-screen overflow-hidden">
+      <div className="app flex flex-col h-screen overflow-hidden">
         <NavBar />
-        <div className="flex flex-row flex-1 h-full">
+        <div className="content flex flex-row flex-1 h-full">
           <DiagramEditor />
           <CodeArea />
         </div>
