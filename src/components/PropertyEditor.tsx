@@ -8,6 +8,8 @@ import {
   Label,
 } from "@blueprintjs/core";
 import { useAppSelector } from "../store";
+import { Column } from "../core/Column";
+import { dataTypes } from "../core/DataType";
 
 const editorHeaderClassName = "p-2 border-b-1 border-cool-gray-700";
 const editorRowTitleClassName = clsx("mb-2 ", Classes.TEXT_MUTED);
@@ -43,31 +45,36 @@ const DiagramProperyEditor: React.FC<React.HTMLAttributes<HTMLDivElement>> = ({
 };
 
 const ColumnPopover: React.FC<{
-  name?: string;
-}> = ({ name }) => {
+  column: Column;
+}> = ({ column }) => {
   return (
     <div className="p-4 rounded">
       <Label>
-        Name
-        <div>{name}</div>
+        <div className={Classes.TEXT_MUTED}>Name</div>
+        <div>{column.name}</div>
       </Label>
 
       <Label>
-        Data Type
-        <HTMLSelect className="w-full">
-          <option>INT</option>
+        <div className={Classes.TEXT_MUTED}>Data Type</div>
+        <HTMLSelect className="w-full" value={column.type}>
+          {dataTypes.map((t) => (
+            <option key={t} value={t}>
+              {t}
+            </option>
+          ))}
         </HTMLSelect>
       </Label>
 
-      <Checkbox label="Primary Key" />
-      <Checkbox label="Not Null" />
-      <Checkbox label="Unique" />
-      <Checkbox label="Auto Increment" />
+      <Checkbox label="Primary Key" checked={column.PK} />
+      <Checkbox label="Not Null" checked={column.NN} />
+      <Checkbox label="Unique" checked={column.UN} />
+      <Checkbox label="Auto Increment" checked={column.AI} />
 
       <Label>
-        Comment
+        <div className={Classes.TEXT_MUTED}>Comment</div>
         <textarea
           className={editorRowInputClassName}
+          value={column.comment}
           placeholder="comment..."
         />
       </Label>
@@ -104,7 +111,7 @@ const TableProperyEditor: React.FC<React.HTMLAttributes<HTMLDivElement>> = ({
           return (
             <Popover
               key={column.id}
-              content={<ColumnPopover name={column.name} />}
+              content={<ColumnPopover column={column} />}
               inheritDarkTheme={false}
               placement="left"
             >

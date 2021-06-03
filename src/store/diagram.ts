@@ -1,6 +1,5 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { Column } from "../core/Column";
-import { DataType } from "../core/DataType";
 import { Position, Table } from "../core/Table";
 
 interface DiagramState {
@@ -15,9 +14,9 @@ const createTable = () =>
   new Table(
     "users",
     [
-      new Column("id", DataType.INT, { AI: true, PK: true, NN: true }),
-      new Column("created_at", DataType.DATETIME),
-      new Column("updated_at", DataType.DATETIME),
+      new Column("id", "INT", { AI: true, PK: true, NN: true }),
+      new Column("created_at", "DATETIME"),
+      new Column("updated_at", "DATETIME"),
     ],
     defaultPosition
   );

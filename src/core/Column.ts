@@ -33,6 +33,7 @@ export class Column implements Constraint {
   public AI: boolean = false;
   public id: string;
   public length?: number;
+  public comment?: string;
 
   constructor(
     public name: string,
