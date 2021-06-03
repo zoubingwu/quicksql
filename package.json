@@ -7,7 +7,8 @@
     "build": "tsc && vite build",
     "serve": "vite preview",
     "prepare": "husky install",
-    "css:analysis": "windicss-analysis"
+    "css:analysis": "windicss-analysis",
+    "fmt": "prettier ./src --write"
   },
   "dependencies": {
     "@blueprintjs/core": "^4.0.0-alpha.0",
@@ -15,7 +16,7 @@
     "@reduxjs/toolkit": "^1.5.1",
     "clsx": "^1.1.1",
     "copy-to-clipboard": "^3.3.1",
-    "immer": "^8.0.1",
+    "immer": "^9.0.2",
     "open-color": "^1.8.0",
     "points-on-curve": "^0.2.0",
     "prismjs": "^1.23.0",
@@ -37,8 +38,8 @@
     "rollup-plugin-visualizer": "^5.4.1",
     "typescript": "^4.1.2",
     "vite": "^2.1.5",
-    "vite-plugin-windicss": "^0.14.6",
-    "windicss": "^2.5.14",
+    "vite-plugin-windicss": "^0.17.0",
+    "windicss": "^3.0.12",
     "windicss-analysis": "^0.2.0"
   }
 }
