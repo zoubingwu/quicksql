@@ -19,7 +19,7 @@ export function NavBar() {
           target="_blank"
           className="text-light-200 mr-4 hover:text-light-200"
         >
-          Github
+          GitHub
         </a>
         <div className="cursor-pointer" onClick={handleOptionsToggle}>
           <span className="mr-2">
