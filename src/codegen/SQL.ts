@@ -1,5 +1,5 @@
 import { Table } from "../core/Table";
-import { TargetLanguage } from "./TargetLanguage";
+import { TargetLanguage, TargetOptions } from "./TargetLanguage";
 
 export class SQLTarget extends TargetLanguage {
   language = "sql";
@@ -7,21 +7,38 @@ export class SQLTarget extends TargetLanguage {
 
   hlImports = () => import("prismjs/components/prism-sql");
 
-  emit(tableRecords: Record<string, Table>) {
+  emit(tableRecords: Record<string, Table>, options: TargetOptions) {
     this.content = "";
 
     const tables = Object.values(tableRecords);
 
+    const prefixTableName = (name: string) => {
+      return options.prefixTable && options.diagramName
+        ? `${options.diagramName}_${name}`
+        : name;
+    };
+
     tables.forEach((table) => {
-      this.emitCodeLine(`CREATE TABLE ${table.name} (`);
+      let indent = 0;
+      this.emitCodeLine(`CREATE TABLE ${prefixTableName(table.name)} (`);
+      indent++;
+
+      const prefixColumnName = (name: string) => {
+        return options.prefixColumn ? `${table.name}_${name}` : name;
+      };
 
       const maxColumnNameLength = Math.max(
-        ...table.columns.map((c) => c.name.length)
+        ...table.columns.map((c) => prefixColumnName(c.name).length)
       );
 
       table.columns.forEach((column) => {
-        this.emitWhiteSpace(4);
-        this.emitCode(`${column.name}`.padEnd(maxColumnNameLength + 2, " "));
+        this.emitIndent(indent);
+        this.emitCode(
+          `${prefixColumnName(column.name)}`.padEnd(
+            maxColumnNameLength + 2,
+            " "
+          )
+        );
         this.emitCode(column.type.toLowerCase().padEnd(10));
 
         if (column.NN) {
@@ -38,16 +55,20 @@ export class SQLTarget extends TargetLanguage {
           this.emitCodeWithWhiteSpaceAppended("AUTO_INCREMENT");
         }
 
-        if (column.PK) {
-          this.emitCodeWithWhiteSpaceAppended("PRIMARY KEY");
-        }
-
         this.emitComma();
         this.emitNewLine();
       });
 
-      this.emitCode(");");
-      this.emitNewLine(2);
+      this.emitIndent(indent);
+      this.emitCodeLine(
+        `PRIMARY KEY (${table.columns
+          .filter((c) => c.PK)
+          .map((c) => c.name)
+          .join(", ")})`
+      );
+
+      this.emitCodeLine(");");
+      this.emitNewLine();
     });
 
     return this.content;

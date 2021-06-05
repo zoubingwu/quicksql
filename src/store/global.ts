@@ -1,18 +1,24 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { allTargets } from "../codegen";
 import { SQLTarget } from "../codegen/SQL";
-import { TargetLanguage } from "../codegen/TargetLanguage";
+import { TargetLanguage, TargetOptions } from "../codegen/TargetLanguage";
 
 interface GlobalState {
   currentTarget: TargetLanguage;
   showCode: boolean;
   propertyEditroPopoverOpened: boolean;
+  targetOptions: TargetOptions;
 }
 
 const initialState: GlobalState = {
   currentTarget: new SQLTarget(),
-  showCode: false,
+  showCode: true,
   propertyEditroPopoverOpened: false,
+  targetOptions: {
+    prefixTable: false,
+    prefixColumn: false,
+    diagramName: "",
+  },
 };
 
 export const globalOptionsSlice = createSlice({
@@ -32,6 +38,18 @@ export const globalOptionsSlice = createSlice({
 
     savePropertyEditorPopoverStatus(state, action: PayloadAction<boolean>) {
       state.propertyEditroPopoverOpened = action.payload;
+    },
+
+    setPrefixTable(state, action: PayloadAction<boolean>) {
+      state.targetOptions.prefixTable = action.payload;
+    },
+
+    setPrefixColumn(state, action: PayloadAction<boolean>) {
+      state.targetOptions.prefixColumn = action.payload;
+    },
+
+    setDiagramName(state, action: PayloadAction<string>) {
+      state.targetOptions.diagramName = action.payload;
     },
   },
 });

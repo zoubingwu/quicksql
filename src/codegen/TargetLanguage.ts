@@ -1,5 +1,19 @@
 import { Table } from "../core/Table";
 
+export interface TargetOptions {
+  diagramName: string;
+
+  /**
+   * prefix table name with diagram name
+   */
+  prefixTable: boolean;
+
+  /**
+   * prefix column name with table name
+   */
+  prefixColumn: boolean;
+}
+
 export abstract class TargetLanguage {
   public language: string;
 
@@ -42,10 +56,20 @@ export abstract class TargetLanguage {
     this.emitWhiteSpace(1);
   }
 
+  /**
+   * emit code with new line appended.
+   */
   protected emitCodeLine(code: string) {
     this.content += code;
     this.emitNewLine();
   }
 
-  public abstract emit(tables: Record<string, Table>): string;
+  protected emitIndent(indent: number) {
+    this.emitWhiteSpace(indent * 4);
+  }
+
+  public abstract emit(
+    tables: Record<string, Table>,
+    options: TargetOptions
+  ): string;
 }

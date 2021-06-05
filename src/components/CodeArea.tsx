@@ -12,19 +12,22 @@ export const CodeArea: React.FC = () => {
   const content = useAppSelector((state) => state.diagram.generatedCode);
   const tables = useAppSelector((state) => state.diagram.tables);
   const showCode = useAppSelector((state) => state.globalOptions.showCode);
+  const targetOptions = useAppSelector(
+    (state) => state.globalOptions.targetOptions
+  );
   const dispatch = useAppDispatch();
 
-  const handleCodeGenerate = useCallback(async () => {
-    const c = currentTarget.emit(tables);
+  const handleCodeGenerate = async () => {
+    const c = currentTarget.emit(tables, targetOptions);
     if (!(currentTarget.language in Prism.languages)) {
       await currentTarget.hlImports();
     }
     dispatch(actions.setGeneratedCode(c));
-  }, [currentTarget, tables]);
+  };
 
   useEffect(() => {
     handleCodeGenerate();
-  }, [tables, currentTarget]);
+  }, [tables, currentTarget, targetOptions]);
 
   useEffect(() => {
     Prism.highlightAll();
@@ -37,7 +40,7 @@ export const CodeArea: React.FC = () => {
         showCode ? "w-1/3" : "w-0"
       )}
     >
-      <pre className="h-full !m-0 !bg-dark-200">
+      <pre className="h-full !m-0 !bg-dark-200 !text-xs">
         <code className={`language-${currentTarget.language}`}>{content}</code>
       </pre>
     </div>

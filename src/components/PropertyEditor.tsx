@@ -9,6 +9,7 @@ import {
   Icon,
   EditableText,
   Button,
+  Switch,
 } from "@blueprintjs/core";
 import { useAppSelector, actions, useAppDispatch } from "../store";
 import { Column, Constraint } from "../core/Column";
@@ -26,10 +27,32 @@ const DiagramProperyEditor: React.FC<React.HTMLAttributes<HTMLDivElement>> = ({
 }) => {
   const dispatch = useAppDispatch();
   const code = useAppSelector((state) => state.diagram.generatedCode);
+  const targetOptions = useAppSelector(
+    (state) => state.globalOptions.targetOptions
+  );
+  const { prefixTable, prefixColumn, diagramName } = targetOptions;
   const { hasCopied, onCopy } = useClipboard(code);
   const handleTargetChange = useCallback(
     (e: React.ChangeEvent<HTMLSelectElement>) => {
       dispatch(actions.setCodeTarget(e.target.value));
+    },
+    []
+  );
+  const handlePrefixTableChange = useCallback(
+    (e: React.FormEvent<HTMLInputElement>) => {
+      dispatch(actions.setPrefixTable(e.currentTarget.checked));
+    },
+    []
+  );
+  const handlePrefixColumnChange = useCallback(
+    (e: React.FormEvent<HTMLInputElement>) => {
+      dispatch(actions.setPrefixColumn(e.currentTarget.checked));
+    },
+    []
+  );
+  const handleDiagramNameChange = useCallback(
+    (e: React.FormEvent<HTMLInputElement>) => {
+      dispatch(actions.setDiagramName(e.currentTarget.value));
     },
     []
   );
@@ -58,6 +81,23 @@ const DiagramProperyEditor: React.FC<React.HTMLAttributes<HTMLDivElement>> = ({
           className={editorRowInputClassName}
           type="text"
           placeholder="diagram name..."
+          value={diagramName}
+          onChange={handleDiagramNameChange}
+        />
+      </div>
+
+      <div className="p-2">
+        <div className={editorRowTitleClassName}>Options</div>
+
+        <Switch
+          checked={prefixTable}
+          label="Prefix table name with diagram name"
+          onChange={handlePrefixTableChange}
+        />
+        <Switch
+          checked={prefixColumn}
+          label="Prefix column name with table name"
+          onChange={handlePrefixColumnChange}
         />
       </div>
 
