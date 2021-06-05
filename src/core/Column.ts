@@ -61,4 +61,10 @@ export class Column implements Constraint {
       draft.type = type;
     });
   }
+
+  setConstraint(key: keyof Constraint, value: boolean) {
+    return produce(this, (draft) => {
+      draft[key] = value;
+    });
+  }
 }

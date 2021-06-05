@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { Column } from "../core/Column";
+import { Column, Constraint } from "../core/Column";
 import { DataType } from "../core/DataType";
 import { Position, Table } from "../core/Table";
 
@@ -109,6 +109,25 @@ export const diagramSlice = createSlice({
         state.tables[tableId] = state.tables[tableId].changeColumnDataType(
           columnId,
           columnType
+        );
+      }
+    },
+
+    updateColumnConstrain(
+      state,
+      action: PayloadAction<{
+        tableId: string;
+        columnId: string;
+        constraint: keyof Constraint;
+        value: boolean;
+      }>
+    ) {
+      const { tableId, columnId, constraint, value } = action.payload;
+      if (tableId in state.tables) {
+        state.tables[tableId] = state.tables[tableId].changeColumnConstrain(
+          columnId,
+          constraint,
+          value
         );
       }
     },

@@ -1,6 +1,6 @@
 import { immerable, produce } from "immer";
 import { nanoid } from "nanoid";
-import { Column } from "./Column";
+import { Column, Constraint } from "./Column";
 import { DataType } from "./DataType";
 
 export class Position {
@@ -75,6 +75,21 @@ export class Table {
       const i = draft.columns.findIndex((c) => c.id === columnId);
       if (i > -1) {
         const editedColumn = draft.columns[i].setType(type);
+        draft.columns.splice(i, 1, editedColumn);
+        draft.columnMap.set(editedColumn.id, editedColumn);
+      }
+    });
+  }
+
+  public changeColumnConstrain(
+    columnId: string,
+    constrain: keyof Constraint,
+    value: boolean
+  ) {
+    return produce(this, (draft) => {
+      const i = draft.columns.findIndex((c) => c.id === columnId);
+      if (i > -1) {
+        const editedColumn = draft.columns[i].setConstraint(constrain, value);
         draft.columns.splice(i, 1, editedColumn);
         draft.columnMap.set(editedColumn.id, editedColumn);
       }
