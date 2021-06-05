@@ -78,16 +78,12 @@ const DiagramProperyEditor: React.FC<React.HTMLAttributes<HTMLDivElement>> = ({
       <div className="p-2">
         <div className={editorRowTitleClassName}>Diagram</div>
         <input
-          className={editorRowInputClassName}
+          className={clsx(editorRowInputClassName, "mb-2")}
           type="text"
           placeholder="diagram name..."
           value={diagramName}
           onChange={handleDiagramNameChange}
         />
-      </div>
-
-      <div className="p-2">
-        <div className={editorRowTitleClassName}>Options</div>
 
         <Switch
           checked={prefixTable}
