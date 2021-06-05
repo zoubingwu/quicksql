@@ -42,7 +42,6 @@ export const TableCard: React.FC<{
   const selectedTable = useAppSelector((state) => state.diagram.selectedTable);
   const handleDrop = useCallback(
     (e: DraggableEvent, data: DraggableData) => {
-      console.log(data);
       if (data.x === position.x && data.y === position.y) return;
       const payload = {
         id,
@@ -58,7 +57,7 @@ export const TableCard: React.FC<{
 
   const handleFieldNameChange = useCallback(
     (tableId: string, columnId: string, columnName: string) => {
-      dispatch(actions.updateFiledName({ tableId, columnId, columnName }));
+      dispatch(actions.updateColumnName({ tableId, columnId, columnName }));
     },
     []
   );
