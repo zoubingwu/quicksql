@@ -62,6 +62,14 @@ export const diagramSlice = createSlice({
       state.layers = newTable.layer;
     },
 
+    deleteTable(state, action: PayloadAction<string>) {
+      const id = action.payload;
+      if (state.selectedTable === id) {
+        state.selectedTable = null;
+      }
+      delete state.tables[id];
+    },
+
     updatePosition(
       state,
       action: PayloadAction<{ id: string; position: Position }>

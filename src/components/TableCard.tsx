@@ -16,15 +16,22 @@ import { ColumnCell } from "./ColumnCell";
 import { useHover } from "../hooks/useHover";
 import clsx from "clsx";
 
-const MenuPopover: React.FC = () => {
+const MenuPopover: React.FC<{
+  tableId: string;
+}> = ({ tableId }) => {
+  const dispatch = useAppDispatch();
+  const handleAddNewColumn = useCallback(() => {
+    dispatch(actions.addNewColumn(tableId));
+  }, [tableId]);
+  const handleDeleteTable = useCallback(() => {
+    dispatch(actions.deleteTable(tableId));
+  }, [tableId]);
+
   return (
     <Menu>
-      <MenuItem text="Add Column" icon="plus" />
-      <MenuItem text="Add Relation" icon="new-link" />
+      <MenuItem text="Add Column" icon="plus" onClick={handleAddNewColumn} />
       <MenuDivider />
-      <MenuItem text="Clone Table" icon="duplicate" />
-      <MenuDivider />
-      <MenuItem text="Delete Table" icon="trash" />
+      <MenuItem text="Delete Table" icon="trash" onClick={handleDeleteTable} />
     </Menu>
   );
 };
@@ -106,7 +113,10 @@ export const TableCard: React.FC<{
         <div className="table-card-handle font-bold px-2 py-1 flex justify-between cursor-move">
           <EditableText defaultValue={name} onConfirm={handleTableNameChange} />
 
-          <Popover content={<MenuPopover />} position={Position.RIGHT_BOTTOM}>
+          <Popover
+            content={<MenuPopover tableId={id} />}
+            position={Position.RIGHT_BOTTOM}
+          >
             <Icon
               icon="menu"
               className={clsx(
