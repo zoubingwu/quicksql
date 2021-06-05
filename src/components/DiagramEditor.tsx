@@ -11,7 +11,7 @@ export const DiagramEditor: React.FC = () => {
   const dispatch = useAppDispatch();
 
   const handleAddTable = useCallback(() => {
-    dispatch(actions.addTable());
+    dispatch(actions.addNewTable());
   }, []);
 
   const handleClickEmptyArea = useCallback(() => {
