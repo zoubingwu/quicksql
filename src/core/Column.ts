@@ -22,6 +22,11 @@ export interface Constraint {
    * AUTO INCREMENT
    */
   AI?: boolean;
+
+  /**
+   * FOREIGH KEY
+   */
+  FK?: boolean;
 }
 
 export class Column implements Constraint {
@@ -31,6 +36,8 @@ export class Column implements Constraint {
   public PK: boolean = false;
   public UN: boolean = false;
   public AI: boolean = false;
+  public FK: boolean = false;
+
   public id: string;
   public length?: number;
   public comment: string = "";
@@ -38,6 +45,7 @@ export class Column implements Constraint {
   constructor(
     public name: string,
     public type: DataType,
+    public parentId: string,
     constraint?: Constraint
   ) {
     Object.assign(this, constraint);

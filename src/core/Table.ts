@@ -62,9 +62,9 @@ export class Table {
     });
   }
 
-  public addNewColumn() {
+  public addNewColumn(column?: Column) {
     return produce(this, (draft) => {
-      const newColumn = new Column("new_column", "INT");
+      const newColumn = column || new Column("new_column", "INT", this.id);
       draft.columns.push(newColumn);
       draft.columnMap.set(newColumn.id, newColumn);
     });

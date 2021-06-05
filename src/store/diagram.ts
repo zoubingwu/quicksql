@@ -1,7 +1,10 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { enableMapSet } from "immer";
 import { Column, Constraint } from "../core/Column";
 import { DataType } from "../core/DataType";
 import { Position, Table } from "../core/Table";
+
+enableMapSet();
 
 interface DiagramState {
   tables: Record<string, Table>;
@@ -12,16 +15,16 @@ interface DiagramState {
 
 export const defaultPosition = { x: 50, y: 50 };
 
-const createTable = () =>
-  new Table(
-    "users",
-    [
-      new Column("id", "INT", { AI: true, PK: true, NN: true }),
-      new Column("created_at", "DATETIME"),
-      new Column("updated_at", "DATETIME"),
-    ],
-    defaultPosition
+const createTable = () => {
+  let table = new Table("users", [], defaultPosition);
+  table = table.addNewColumn(
+    new Column("id", "INT", table.id, { AI: true, PK: true, NN: true })
   );
+  table = table.addNewColumn(new Column("created_at", "DATETIME", table.id));
+  table = table.addNewColumn(new Column("updated_at", "DATETIME", table.id));
+
+  return table;
+};
 
 const defaultTable = createTable();
 
