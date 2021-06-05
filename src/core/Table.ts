@@ -1,6 +1,7 @@
 import { immerable, produce } from "immer";
-import shortId from "short-uuid";
+import { nanoid } from "nanoid";
 import { Column } from "./Column";
+import { DataType } from "./DataType";
 
 export class Position {
   x: number;
@@ -12,7 +13,7 @@ export type ColumnMap = Record<string, Column>;
 export class Table {
   private [immerable] = true;
 
-  public columnMap: Record<string, Column>;
+  public columnMap: Map<string, Column>;
   public id: string;
 
   /**
@@ -25,17 +26,11 @@ export class Table {
     public columns: Column[],
     public position: Position
   ) {
-    this.createColumnMap();
-    this.id = shortId.generate();
-  }
-
-  public createColumnMap() {
     this.columnMap = this.columns.reduce((acc, next) => {
-      acc[next.name] = next;
+      acc.set(next.id, next);
       return acc;
-    }, {} as ColumnMap);
-
-    return this.columnMap;
+    }, new Map<string, Column>());
+    this.id = nanoid();
   }
 
   public setName(name: string) {
@@ -60,7 +55,28 @@ export class Table {
     return produce(this, (draft) => {
       const i = draft.columns.findIndex((c) => c.id === columnId);
       if (i > -1) {
-        draft.columns.splice(i, 1, draft.columns[i].setName(name));
+        const editedColumn = draft.columns[i].setName(name);
+        draft.columns.splice(i, 1, editedColumn);
+        draft.columnMap.set(editedColumn.id, editedColumn);
+      }
+    });
+  }
+
+  public addNewColumn() {
+    return produce(this, (draft) => {
+      const newColumn = new Column("new_column", "INT");
+      draft.columns.push(newColumn);
+      draft.columnMap.set(newColumn.id, newColumn);
+    });
+  }
+
+  public changeColumnDataType(columnId: string, type: DataType) {
+    return produce(this, (draft) => {
+      const i = draft.columns.findIndex((c) => c.id === columnId);
+      if (i > -1) {
+        const editedColumn = draft.columns[i].setType(type);
+        draft.columns.splice(i, 1, editedColumn);
+        draft.columnMap.set(editedColumn.id, editedColumn);
       }
     });
   }

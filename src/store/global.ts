@@ -29,5 +29,3 @@ export const globalOptionsSlice = createSlice({
     },
   },
 });
-
-export const actions = globalOptionsSlice.actions;

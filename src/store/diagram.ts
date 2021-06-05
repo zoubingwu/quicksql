@@ -1,5 +1,6 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { Column } from "../core/Column";
+import { DataType } from "../core/DataType";
 import { Position, Table } from "../core/Table";
 
 interface DiagramState {
@@ -39,7 +40,7 @@ export const diagramSlice = createSlice({
   name: "diagram",
   initialState,
   reducers: {
-    addTable(state) {
+    addNewTable(state) {
       let newTable = createTable().setLayer(state.layers + 1);
       const currentTables = Object.values(state.tables);
 
@@ -76,7 +77,7 @@ export const diagramSlice = createSlice({
       }
     },
 
-    updateFiledName(
+    updateColumnName(
       state,
       action: PayloadAction<{
         tableId: string;
@@ -90,6 +91,30 @@ export const diagramSlice = createSlice({
           columnId,
           columnName
         );
+      }
+    },
+
+    updateColumnDataType(
+      state,
+      action: PayloadAction<{
+        tableId: string;
+        columnId: string;
+        columnType: DataType;
+      }>
+    ) {
+      const { tableId, columnId, columnType } = action.payload;
+      if (tableId in state.tables) {
+        state.tables[tableId] = state.tables[tableId].changeColumnDataType(
+          columnId,
+          columnType
+        );
+      }
+    },
+
+    addNewColumn(state, action: PayloadAction<string>) {
+      const tableId = action.payload;
+      if (tableId in state.tables) {
+        state.tables[tableId] = state.tables[tableId].addNewColumn();
       }
     },
 
@@ -107,5 +132,3 @@ export const diagramSlice = createSlice({
     },
   },
 });
-
-export const actions = diagramSlice.actions;

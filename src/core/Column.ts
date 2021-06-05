@@ -1,5 +1,5 @@
 import { immerable, produce } from "immer";
-import shortId from "short-uuid";
+import { nanoid } from "nanoid";
 import { DataType } from "./DataType";
 
 export interface Constraint {
@@ -33,7 +33,7 @@ export class Column implements Constraint {
   public AI: boolean = false;
   public id: string;
   public length?: number;
-  public comment?: string;
+  public comment: string = "";
 
   constructor(
     public name: string,
@@ -41,12 +41,24 @@ export class Column implements Constraint {
     constraint?: Constraint
   ) {
     Object.assign(this, constraint);
-    this.id = shortId.generate();
+    this.id = nanoid();
   }
 
   setName(name: string) {
     return produce(this, (draft) => {
       draft.name = name;
+    });
+  }
+
+  setComment(c: string) {
+    return produce(this, (draft) => {
+      draft.comment = c;
+    });
+  }
+
+  setType(type: DataType) {
+    return produce(this, (draft) => {
+      draft.type = type;
     });
   }
 }

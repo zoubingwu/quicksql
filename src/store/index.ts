@@ -1,7 +1,14 @@
 import { configureStore } from "@reduxjs/toolkit";
 import { TypedUseSelectorHook, useDispatch, useSelector } from "react-redux";
-import { diagramSlice, actions as diagramActions } from "./diagram";
-import { globalOptionsSlice, actions as globalActions } from "./global";
+import { diagramSlice } from "./diagram";
+import { globalOptionsSlice } from "./global";
+
+//@ts-ignore
+const logger = (s) => (next) => (action) => {
+  console.log(action);
+  next(action);
+  console.log(s.getState());
+};
 
 export const store = configureStore({
   reducer: {
@@ -11,7 +18,7 @@ export const store = configureStore({
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
       serializableCheck: false,
-    }),
+    }).concat(logger),
   devTools: true,
 });
 
@@ -24,6 +31,6 @@ export const useAppDispatch = () => useDispatch<AppDispatch>();
 export const useAppSelector: TypedUseSelectorHook<RootState> = useSelector;
 
 export const actions = {
-  ...diagramActions,
-  ...globalActions,
+  ...diagramSlice.actions,
+  ...globalOptionsSlice.actions,
 };
