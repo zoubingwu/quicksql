@@ -8,6 +8,9 @@ import { PropertyEditor } from "./PropertyEditor";
 export const DiagramEditor: React.FC = () => {
   const tables = useAppSelector((state) => state.diagram.tables);
   const showCode = useAppSelector((state) => state.globalOptions.showCode);
+  const popoverOpened = useAppSelector(
+    (state) => state.globalOptions.propertyEditroPopoverOpened
+  );
   const dispatch = useAppDispatch();
 
   const handleAddTable = useCallback(() => {
@@ -15,8 +18,9 @@ export const DiagramEditor: React.FC = () => {
   }, []);
 
   const handleClickEmptyArea = useCallback(() => {
+    if (popoverOpened) return;
     dispatch(actions.setSelected(null));
-  }, []);
+  }, [popoverOpened]);
 
   return (
     <div
