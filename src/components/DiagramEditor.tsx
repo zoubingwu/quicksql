@@ -25,7 +25,7 @@ export const DiagramEditor: React.FC = () => {
   return (
     <div
       className={clsx(
-        "diagram-editor flex-shrink-0 flex-grow-0 overflow-hidden relative transition-all",
+        "quicksql-diagram-editor flex-shrink-0 flex-grow-0 overflow-hidden relative transition-all",
         showCode ? "w-2/3" : "w-full"
       )}
       onClick={handleClickEmptyArea}

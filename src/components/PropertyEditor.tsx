@@ -59,7 +59,7 @@ const DiagramProperyEditor: React.FC<React.HTMLAttributes<HTMLDivElement>> = ({
 
   return (
     <div
-      className={clsx("diagram-property-editor", className)}
+      className={clsx("quicksql-diagram-property-editor", className)}
       onClick={onClick}
     >
       <header className={editorHeaderClassName}>Diagram Properties</header>
@@ -162,7 +162,7 @@ const ColumnPopover: React.FC<{
   };
 
   return (
-    <div className="p-4 rounded w-300px">
+    <div className="quicksql-column-editor p-4 rounded w-300px">
       <Label>
         <div className={Classes.TEXT_MUTED}>Column Name</div>
         <EditableText defaultValue={name} onConfirm={handleColumnNameChange} />
@@ -234,7 +234,10 @@ const TableProperyEditor: React.FC<React.HTMLAttributes<HTMLDivElement>> = ({
   }, []);
 
   return (
-    <div className={clsx("table-property-editor", className)} onClick={onClick}>
+    <div
+      className={clsx("quicksql-table-property-editor", className)}
+      onClick={onClick}
+    >
       <header className={editorHeaderClassName}>Table Properties</header>
       <div className="p-2">
         <div className={editorRowTitleClassName}>Table</div>
@@ -287,7 +290,7 @@ const TableProperyEditor: React.FC<React.HTMLAttributes<HTMLDivElement>> = ({
 export const PropertyEditor: React.FC = () => {
   const selectedTable = useAppSelector((state) => state.diagram.selectedTable);
   const className = clsx(
-    "property-editor absolute right-0 w-360px bg-dark-200 text-light-900 h-full border-r-1 border-cool-gray-700",
+    "quicksql-property-editor absolute right-0 w-360px bg-dark-200 text-light-900 h-full border-r-1 border-cool-gray-700",
     Classes.DARK
   );
   const handleClick = useCallback((e: React.MouseEvent<HTMLDivElement>) => {

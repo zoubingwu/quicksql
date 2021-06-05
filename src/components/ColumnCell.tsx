@@ -18,7 +18,7 @@ export const ColumnCell: React.FC<{
   );
 
   return (
-    <div className="px-2 py-1 flex flex-row items-center justify-between">
+    <div className="quicksql-column-cell px-2 py-1 flex flex-row items-center justify-between">
       <EditableText defaultValue={name} onConfirm={handleNameChange} />
     </div>
   );

@@ -10,10 +10,10 @@ export function NavBar() {
   }, []);
 
   return (
-    <div className="nav-bar p-2 flex justify-between items-center bg-hex-106BA3 text-white">
+    <div className="quicksql-nav-bar p-2 flex justify-between items-center bg-hex-106BA3 text-white">
       <div>QuickSQL</div>
 
-      <div className="nav-bar-links mx-2 flex">
+      <div className="quicksql-nav-bar-links mx-2 flex">
         <a
           href="https://github.com/zoubingwu/quicksql"
           target="_blank"

@@ -94,14 +94,14 @@ export const TableCard: React.FC<{
 
   return (
     <Draggable
-      handle=".table-card-handle"
+      handle=".quicksql-table-card-handle"
       onStart={handleMoveToTopLayer}
       onStop={handleDrop}
       defaultPosition={defaultPosition}
       position={position}
     >
       <div
-        className="table-card absolute w-320px cursor-pointer"
+        className="quicksql-table-card absolute w-320px cursor-pointer"
         style={{ zIndex: layer }}
         ref={targetRef}
         onClick={handleClickOnTable}
@@ -110,7 +110,7 @@ export const TableCard: React.FC<{
           e.stopPropagation();
         }}
       >
-        <div className="table-card-handle font-bold px-2 py-1 flex justify-between cursor-move">
+        <div className="quicksql-table-card-handle font-bold px-2 py-1 flex justify-between cursor-move">
           <EditableText defaultValue={name} onConfirm={handleTableNameChange} />
 
           <Popover
@@ -129,6 +129,7 @@ export const TableCard: React.FC<{
 
         <div
           className={clsx(
+            "quicksql-table-column",
             "w-xs relative shadow-lg border rounded-md bg-white",
             isSelected && "border-blue-400"
           )}

@@ -36,7 +36,7 @@ export const CodeArea: React.FC = () => {
   return (
     <div
       className={clsx(
-        "code-area flex-shrink-0 flex-grow-0 relative transition-all overflow-hidden",
+        "quicksql-code-area flex-shrink-0 flex-grow-0 relative transition-all overflow-hidden",
         showCode ? "w-1/3" : "w-0"
       )}
     >
