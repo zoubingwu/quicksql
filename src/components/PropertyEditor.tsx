@@ -19,12 +19,34 @@ const DiagramProperyEditor: React.FC<React.HTMLAttributes<HTMLDivElement>> = ({
   className,
   onClick,
 }) => {
+  const dispatch = useAppDispatch();
+  const code = useAppSelector((state) => state.diagram.generatedCode);
+  const { hasCopied, onCopy } = useClipboard(code);
+  const handleTargetChange = useCallback(
+    (e: React.ChangeEvent<HTMLSelectElement>) => {
+      dispatch(actions.setCodeTarget(e.target.value));
+    },
+    []
+  );
+
   return (
     <div
       className={clsx("diagram-property-editor", className)}
       onClick={onClick}
     >
       <header className={editorHeaderClassName}>Diagram Properties</header>
+
+      <div className="p-2">
+        <div className={editorRowTitleClassName}>Target</div>
+        <HTMLSelect onChange={handleTargetChange} className="w-full">
+          {all.map((i) => (
+            <option value={i.name} key={i.name}>
+              {i.name}
+            </option>
+          ))}
+        </HTMLSelect>
+      </div>
+
       <div className="p-2">
         <div className={editorRowTitleClassName}>Diagram</div>
         <input
@@ -39,6 +61,12 @@ const DiagramProperyEditor: React.FC<React.HTMLAttributes<HTMLDivElement>> = ({
           className={editorRowInputClassName}
           placeholder="comment..."
         />
+      </div>
+
+      <div className="p-2">
+        <Button className="w-full" onClick={onCopy}>
+          {hasCopied ? "Copied!" : "Copy Code"}
+        </Button>
       </div>
     </div>
   );

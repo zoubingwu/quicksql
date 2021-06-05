@@ -7,6 +7,7 @@ interface DiagramState {
   tables: Record<string, Table>;
   layers: number;
   selectedTable: string | null;
+  generatedCode: string;
 }
 
 export const defaultPosition = { x: 50, y: 50 };
@@ -30,6 +31,7 @@ const initialState: DiagramState = {
   },
   layers: 1,
   selectedTable: null,
+  generatedCode: "",
 };
 
 function isCloseEnough(a: Position, b: Position): boolean {
@@ -129,6 +131,10 @@ export const diagramSlice = createSlice({
 
     setSelected(state, action: PayloadAction<string | null>) {
       state.selectedTable = action.payload;
+    },
+
+    setGeneratedCode(state, action: PayloadAction<string>) {
+      state.generatedCode = action.payload;
     },
   },
 });
