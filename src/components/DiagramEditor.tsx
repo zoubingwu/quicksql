@@ -48,8 +48,13 @@ export const DiagramEditor: React.FC = () => {
 
   const handleClickEmptyArea = useCallback(() => {
     if (popoverOpened) return;
-    dispatch(actions.setSelected(null));
-  }, [popoverOpened]);
+
+    if (creatingCurve) {
+      dispatch(actions.cancelCreatingRelationCurve());
+    } else {
+      dispatch(actions.setSelected(null));
+    }
+  }, [popoverOpened, creatingCurve]);
 
   const handleCurveEndCompute = (e: React.MouseEvent<HTMLDivElement>) => {
     if (creatingCurve) {
