@@ -8,7 +8,7 @@ import React, {
 import clsx from "clsx";
 import { ContextMenu, Menu, MenuItem, useHotkeys } from "@blueprintjs/core";
 import { useAppDispatch, useAppSelector, actions } from "../store";
-import { TableCard } from "./TableCard";
+import { MemoizedTableCard } from "./TableCard";
 import { PropertyEditor } from "./PropertyEditor";
 import { RelationshipCurve, TempRelationshipCurve } from "./RelationshipCurve";
 import { Position } from "../core/Position";
@@ -100,7 +100,7 @@ export const DiagramEditor: React.FC = () => {
         }
       >
         {Object.values(tables).map((t) => (
-          <TableCard data={t} key={t.id} />
+          <MemoizedTableCard data={t} key={t.id} />
         ))}
 
         {Object.values(relations).map((r) => (

@@ -49,9 +49,9 @@ const MenuPopover: React.FC<{
   );
 };
 
-export const TableCard: React.FC<{
+const TableCard: React.FC<{
   data: Table;
-}> = React.memo(({ data }) => {
+}> = ({ data }) => {
   const { id, name, position, columns, layer } = data;
   const [targetRef, isHovering] = useHover<HTMLDivElement>();
   const dispatch = useAppDispatch();
@@ -184,4 +184,6 @@ export const TableCard: React.FC<{
       </div>
     </Draggable>
   );
-});
+};
+
+export const MemoizedTableCard = React.memo(TableCard);
