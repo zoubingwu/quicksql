@@ -6,8 +6,21 @@ import { Position } from "./Position";
 
 export type ColumnMap = Record<string, Column>;
 
+export const DEFAULT_TABLE_POSITION = { x: 50, y: 50 };
+
 export class Table {
   private [immerable] = true;
+
+  static create(name: string = "table_name") {
+    let table = new Table(name, [], DEFAULT_TABLE_POSITION);
+    table = table.addNewColumn(
+      new Column("id", "INT", table.id, { AI: true, PK: true, NN: true })
+    );
+    table = table.addNewColumn(new Column("created_at", "DATETIME", table.id));
+    table = table.addNewColumn(new Column("updated_at", "DATETIME", table.id));
+
+    return table;
+  }
 
   public columnMap: Map<string, Column>;
   public id: string;
@@ -27,6 +40,16 @@ export class Table {
       return acc;
     }, new Map<string, Column>());
     this.id = nanoid();
+  }
+
+  public clone() {
+    let newTable = new Table(this.name, [], DEFAULT_TABLE_POSITION);
+
+    this.columns.forEach((c) => {
+      newTable = newTable.addNewColumn(c.clone(newTable.id));
+    });
+
+    return newTable;
   }
 
   public setName(name: string) {

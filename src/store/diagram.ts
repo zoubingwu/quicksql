@@ -21,20 +21,7 @@ interface DiagramState {
   tempRelationCurveEndPosition: Position | null;
 }
 
-export const defaultPosition = { x: 50, y: 50 };
-
-const createTable = () => {
-  let table = new Table("users", [], defaultPosition);
-  table = table.addNewColumn(
-    new Column("id", "INT", table.id, { AI: true, PK: true, NN: true })
-  );
-  table = table.addNewColumn(new Column("created_at", "DATETIME", table.id));
-  table = table.addNewColumn(new Column("updated_at", "DATETIME", table.id));
-
-  return table;
-};
-
-const defaultTable = createTable();
+const defaultTable = Table.create();
 
 const initialState: DiagramState = {
   tables: {
@@ -55,23 +42,25 @@ function isCloseEnough(a: Position, b: Position): boolean {
   return Math.abs(a.x - b.x) <= 10 && Math.abs(a.y - b.y) <= 10;
 }
 
+function findBetterPosition(allTables: Table[], target: Table) {
+  while (allTables.some((t) => isCloseEnough(t.position, target.position))) {
+    target = target.setPosition({
+      x: target.position.x,
+      y: target.position.y + 150,
+    });
+  }
+
+  return target;
+}
+
 export const diagramSlice = createSlice({
   name: "diagram",
   initialState,
   reducers: {
     addNewTable(state) {
-      let newTable = createTable().setLayer(state.layers + 1);
+      let newTable = Table.create().setLayer(state.layers + 1);
       const currentTables = Object.values(state.tables);
-
-      while (
-        currentTables.some((t) => isCloseEnough(t.position, newTable.position))
-      ) {
-        newTable = newTable.setPosition({
-          x: newTable.position.x + 50,
-          y: newTable.position.y + 50,
-        });
-      }
-
+      newTable = findBetterPosition(currentTables as Table[], newTable);
       state.tables[newTable.id] = newTable;
       state.layers = newTable.layer;
     },
@@ -82,6 +71,18 @@ export const diagramSlice = createSlice({
         state.selectedTable = null;
       }
       delete state.tables[id];
+    },
+
+    duplicateTable(state, action: PayloadAction<string>) {
+      const id = action.payload;
+      if (id in state.tables) {
+        let newTable = state.tables[id].clone();
+        const currentTables = Object.values(state.tables);
+        newTable = findBetterPosition(currentTables as Table[], newTable);
+        newTable = newTable.setLayer(state.layers + 1);
+        state.tables[newTable.id] = newTable;
+        state.layers = newTable.layer;
+      }
     },
 
     updatePosition(

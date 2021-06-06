@@ -52,6 +52,13 @@ export class Column implements Constraint {
     this.id = nanoid();
   }
 
+  clone(parentId: string) {
+    return produce(this, (draft) => {
+      draft.id = nanoid();
+      draft.parentId = parentId;
+    });
+  }
+
   setName(name: string) {
     return produce(this, (draft) => {
       draft.name = name;

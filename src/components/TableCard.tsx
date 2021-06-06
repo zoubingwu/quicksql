@@ -1,5 +1,6 @@
 import React, { useCallback } from "react";
 import Draggable, { DraggableData, DraggableEvent } from "react-draggable";
+import clsx from "clsx";
 import {
   Icon,
   Menu,
@@ -9,12 +10,10 @@ import {
   Position,
   EditableText,
 } from "@blueprintjs/core";
-import { Table } from "../core/Table";
+import { DEFAULT_TABLE_POSITION, Table } from "../core/Table";
 import { useAppDispatch, useAppSelector, actions } from "../store";
-import { defaultPosition } from "../store/diagram";
 import { ColumnCell } from "./ColumnCell";
 import { useHover } from "../hooks/useHover";
-import clsx from "clsx";
 
 const MenuPopover: React.FC<{
   tableId: string;
@@ -26,12 +25,26 @@ const MenuPopover: React.FC<{
   const handleDeleteTable = useCallback(() => {
     dispatch(actions.deleteTable(tableId));
   }, [tableId]);
+  const handleDuplicateTable = useCallback(() => {
+    dispatch(actions.duplicateTable(tableId));
+  }, [tableId]);
 
   return (
     <Menu>
       <MenuItem text="Add Column" icon="plus" onClick={handleAddNewColumn} />
       <MenuDivider />
-      <MenuItem text="Delete Table" icon="trash" onClick={handleDeleteTable} />
+      <MenuItem
+        text="Duplicate Table"
+        icon="duplicate"
+        onClick={handleDuplicateTable}
+      />
+      <MenuDivider />
+      <MenuItem
+        text="Delete Table"
+        icon="trash"
+        onClick={handleDeleteTable}
+        intent="danger"
+      />
     </Menu>
   );
 };
@@ -89,7 +102,7 @@ export const TableCard: React.FC<{
       handle=".quicksql-table-card-handle"
       onStart={handleMoveToTopLayer}
       onStop={handleDrop}
-      defaultPosition={defaultPosition}
+      defaultPosition={DEFAULT_TABLE_POSITION}
       position={position}
     >
       <div
