@@ -12,7 +12,7 @@ interface GlobalState {
 
 const initialState: GlobalState = {
   currentTarget: new SQLTarget(),
-  showCode: true,
+  showCode: false,
   propertyEditroPopoverOpened: false,
   targetOptions: {
     prefixTable: false,
