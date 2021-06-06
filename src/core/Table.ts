@@ -2,11 +2,7 @@ import { immerable, produce } from "immer";
 import { nanoid } from "nanoid";
 import { Column, Constraint } from "./Column";
 import { DataType } from "./DataType";
-
-export class Position {
-  x: number;
-  y: number;
-}
+import { Position } from "./Position";
 
 export type ColumnMap = Record<string, Column>;
 
