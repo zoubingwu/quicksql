@@ -17,16 +17,19 @@ export const ColumnCell: React.FC<{
     (state) => state.diagram.tempRelationCurveStartColumn
   );
 
-  const handleNameChange = (value: string) => {
-    if (value === name) return;
-    dispatch(
-      actions.updateColumnName({
-        tableId: parentId,
-        columnId: id,
-        columnName: value,
-      })
-    );
-  };
+  const handleNameChange = useCallback(
+    (value: string) => {
+      if (value === name) return;
+      dispatch(
+        actions.updateColumnName({
+          tableId: parentId,
+          columnId: id,
+          columnName: value,
+        })
+      );
+    },
+    [name, parentId, id]
+  );
 
   const handleCreateOrFinishCurve = (e: React.MouseEvent<HTMLDivElement>) => {
     const parent = document
