@@ -38,7 +38,7 @@ const MenuPopover: React.FC<{
 
 export const TableCard: React.FC<{
   data: Table;
-}> = ({ data }) => {
+}> = React.memo(({ data }) => {
   const { id, name, position, columns, layer } = data;
   const [targetRef, isHovering] = useHover<HTMLDivElement>();
   const dispatch = useAppDispatch();
@@ -62,13 +62,6 @@ export const TableCard: React.FC<{
     [id, position]
   );
 
-  const handleFieldNameChange = useCallback(
-    (tableId: string, columnId: string, columnName: string) => {
-      dispatch(actions.updateColumnName({ tableId, columnId, columnName }));
-    },
-    []
-  );
-
   const handleTableNameChange = useCallback(
     (value: string) => {
       if (value === name) return;
@@ -84,7 +77,6 @@ export const TableCard: React.FC<{
 
   const handleClickOnTable = useCallback(
     (e: React.MouseEvent<HTMLDivElement>) => {
-      e.preventDefault();
       e.stopPropagation();
       if (id === selectedTable) return;
       dispatch(actions.setSelected(id));
@@ -111,7 +103,11 @@ export const TableCard: React.FC<{
         }}
       >
         <div className="quicksql-table-card-handle font-bold px-2 py-1 flex justify-between cursor-move">
-          <EditableText defaultValue={name} onConfirm={handleTableNameChange} />
+          <EditableText
+            value={name}
+            placeholder="edit table name"
+            onChange={handleTableNameChange}
+          />
 
           <Popover
             content={<MenuPopover tableId={id} />}
@@ -131,19 +127,14 @@ export const TableCard: React.FC<{
           className={clsx(
             "quicksql-table-column",
             "w-xs relative shadow-lg border rounded-md bg-white",
-            isSelected && "border-blue-400"
+            isSelected && "border-light-blue-600"
           )}
         >
           {columns.map((c) => (
-            <ColumnCell
-              key={c.name}
-              data={c}
-              tableId={id}
-              onNameChange={handleFieldNameChange}
-            />
+            <ColumnCell key={c.name} data={c} />
           ))}
         </div>
       </div>
     </Draggable>
   );
-};
+});

@@ -229,6 +229,14 @@ const TableProperyEditor: React.FC<React.HTMLAttributes<HTMLDivElement>> = ({
   const handleAddNewColumn = useCallback(() => {
     dispatch(actions.addNewColumn(id));
   }, [id]);
+  const handleTableNameChange = useCallback(
+    (e: React.FormEvent<HTMLInputElement>) => {
+      const val = e.currentTarget.value;
+      if (val === name) return;
+      dispatch(actions.updateTableName({ id, name: val }));
+    },
+    [id, name]
+  );
   const handleSavingPopoverStatus = useCallback((value: boolean) => {
     dispatch(actions.savePropertyEditorPopoverStatus(value));
   }, []);
@@ -246,6 +254,7 @@ const TableProperyEditor: React.FC<React.HTMLAttributes<HTMLDivElement>> = ({
           type="text"
           value={name}
           placeholder="table name..."
+          onChange={handleTableNameChange}
         />
       </div>
       <div className="p-2">
