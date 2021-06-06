@@ -175,13 +175,14 @@ export const diagramSlice = createSlice({
     },
 
     setSelected(state, action: PayloadAction<string | null>) {
-      state.selectedTable = action.payload;
       if (!action.payload && state.creatingRelationCurve) {
         state.creatingRelationCurve = false;
         state.tempRelationCurveStartColumn = null;
         state.tempRelationCurveStartPosition = null;
         state.tempRelationCurveEndColumn = null;
         state.tempRelationCurveEndPosition = null;
+      } else {
+        state.selectedTable = action.payload;
       }
     },
 
