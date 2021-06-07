@@ -27,17 +27,18 @@ export const TempRelationshipCurve: React.FC<{
   const end = useAppSelector(
     (state) => state.diagram.tempRelationCurveEndPosition
   )!;
-
   const zIndex = useAppSelector((state) => state.diagram.layers);
-
   const realtimeEnd = mousePosition || end;
 
   const svgStyle = useMemo(() => {
-    const left = Math.min(start.x, realtimeEnd.x);
-    const top = Math.min(start.y, realtimeEnd.y);
+    // give extra space so mouse can hover on another element
+    const left = start.x - realtimeEnd.x > 0 ? realtimeEnd.x + 2 : start.x;
+    const top = start.y - realtimeEnd.y > 0 ? realtimeEnd.y + 2 : start.y;
     const width = getWidthBetweenPositions(start, realtimeEnd);
     const height = getHeightBetweenPositions(start, realtimeEnd);
-    return { zIndex, left, top, width, height };
+    const styles = { left, top, width, height, zIndex };
+
+    return styles;
   }, [start, end, mousePosition, zIndex]);
 
   const data: [number, number][] = useMemo(() => {
