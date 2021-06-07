@@ -114,4 +114,15 @@ export class Table {
       }
     });
   }
+
+  public changeColumnRelationStatus(columnId: string, val: boolean) {
+    return produce(this, (draft) => {
+      const i = draft.columns.findIndex((c) => c.id === columnId);
+      if (i > -1) {
+        const editedColumn = draft.columns[i].setHasRelation(val);
+        draft.columns.splice(i, 1, editedColumn);
+        draft.columnMap.set(editedColumn.id, editedColumn);
+      }
+    });
+  }
 }

@@ -1,13 +1,14 @@
-import React, { useMemo } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import {
-  getHeightBetween2Position,
-  getWidthBetween2Position,
-  minus,
+  getHeightBetweenPositions,
+  getWidthBetweenPositions,
   Position,
-  toPoint,
+  toPosition,
+  Point,
 } from "../core/Position";
 import { Relation } from "../core/Relation";
 import { useAppSelector } from "../store";
+import { findCurvePoints } from "../store/diagram.helpers";
 import { BasisCurve } from "./Curve";
 
 export const TempRelationshipCurve: React.FC<{
@@ -27,8 +28,8 @@ export const TempRelationshipCurve: React.FC<{
   const svgStyle = useMemo(() => {
     const left = Math.min(start.x, realtimeEnd.x);
     const top = Math.min(start.y, realtimeEnd.y);
-    const width = getWidthBetween2Position(start, realtimeEnd);
-    const height = getHeightBetween2Position(start, realtimeEnd);
+    const width = getWidthBetweenPositions(start, realtimeEnd);
+    const height = getHeightBetweenPositions(start, realtimeEnd);
     return { zIndex, left, top, width, height };
   }, [start, end, mousePosition, zIndex]);
 
@@ -80,5 +81,61 @@ export const TempRelationshipCurve: React.FC<{
 export const RelationshipCurve: React.FC<{
   data: Relation;
 }> = ({ data }) => {
-  return <div></div>;
+  const { curvePoints, id, fromTable, fromColumn, toTable, toColumn } = data;
+
+  const [curve, setCurve] = useState<Point[]>(curvePoints);
+
+  const tables = useAppSelector((state) => state.diagram.tables);
+
+  const svgStyle = useMemo(() => {
+    const left = Math.min(...curve.map((p) => p[0]));
+    const top = Math.min(...curve.map((p) => p[1]));
+    const width = getWidthBetweenPositions(...curve.map((p) => toPosition(p)));
+    const height = getHeightBetweenPositions(
+      ...curve.map((p) => toPosition(p))
+    );
+    return { left, top, width, height };
+  }, [curve]);
+
+  const handleRecalculatePoints = useCallback(
+    (e: MessageEvent) => {
+      if (id !== e.data.id) {
+        return;
+      }
+      const tableId = e.data.tableId;
+      const parent =
+        fromTable === tableId
+          ? tables[fromTable].setPosition(e.data.position)
+          : tables[fromTable];
+      const child =
+        toTable === tableId
+          ? tables[toTable].setPosition(e.data.position)
+          : tables[toTable];
+      const points = findCurvePoints(parent, child, fromColumn, toColumn);
+      const nextCurve = points;
+      setCurve(nextCurve);
+    },
+    [tables, fromTable, toTable, fromColumn, toColumn]
+  );
+
+  useEffect(() => {
+    window.addEventListener("message", handleRecalculatePoints);
+
+    return () => {
+      window.removeEventListener("message", handleRecalculatePoints);
+    };
+  }, [handleRecalculatePoints]);
+
+  return (
+    <svg className="absolute" style={svgStyle}>
+      <BasisCurve
+        data={curve.map(
+          (p) => [p[0] - svgStyle.left, p[1] - svgStyle.top] as Point
+        )}
+        stroke="#106BA3"
+        strokeWidth={2}
+        showPoints={false}
+      />
+    </svg>
+  );
 };

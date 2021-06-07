@@ -5,10 +5,15 @@ import { DataType } from "../core/DataType";
 import { Relation } from "../core/Relation";
 import { Table } from "../core/Table";
 import { Position } from "../core/Position";
+import {
+  findCurvePoints,
+  findPositionWhenInsertNewTable,
+  resetTempCurve,
+} from "./diagram.helpers";
 
 enableMapSet();
 
-interface DiagramState {
+export interface DiagramState {
   tables: Record<string, Table>;
   relations: Record<string, Relation>;
   layers: number;
@@ -17,7 +22,6 @@ interface DiagramState {
   creatingRelationCurve: boolean;
   tempRelationCurveStartColumn: Column | null;
   tempRelationCurveStartPosition: Position | null;
-  tempRelationCurveEndColumn: Column | null;
   tempRelationCurveEndPosition: Position | null;
 }
 
@@ -34,24 +38,10 @@ const initialState: DiagramState = {
   creatingRelationCurve: false,
   tempRelationCurveStartColumn: null,
   tempRelationCurveStartPosition: null,
-  tempRelationCurveEndColumn: null,
   tempRelationCurveEndPosition: null,
 };
 
-function isCloseEnough(a: Position, b: Position): boolean {
-  return Math.abs(a.x - b.x) <= 10 && Math.abs(a.y - b.y) <= 10;
-}
-
-function findBetterPosition(allTables: Table[], target: Table) {
-  while (allTables.some((t) => isCloseEnough(t.position, target.position))) {
-    target = target.setPosition({
-      x: target.position.x,
-      y: target.position.y + 150,
-    });
-  }
-
-  return target;
-}
+type ColumnCellPosition = Pick<DOMRect, "x" | "y" | "width" | "height">;
 
 export const diagramSlice = createSlice({
   name: "diagram",
@@ -60,7 +50,10 @@ export const diagramSlice = createSlice({
     addNewTable(state) {
       let newTable = Table.create().setLayer(state.layers + 1);
       const currentTables = Object.values(state.tables);
-      newTable = findBetterPosition(currentTables as Table[], newTable);
+      newTable = findPositionWhenInsertNewTable(
+        currentTables as Table[],
+        newTable
+      );
       state.tables[newTable.id] = newTable;
       state.layers = newTable.layer;
     },
@@ -78,7 +71,10 @@ export const diagramSlice = createSlice({
       if (id in state.tables) {
         let newTable = state.tables[id].clone();
         const currentTables = Object.values(state.tables);
-        newTable = findBetterPosition(currentTables as Table[], newTable);
+        newTable = findPositionWhenInsertNewTable(
+          currentTables as Table[],
+          newTable
+        );
         newTable = newTable.setLayer(state.layers + 1);
         state.tables[newTable.id] = newTable;
         state.layers = newTable.layer;
@@ -186,36 +182,70 @@ export const diagramSlice = createSlice({
       state,
       action: PayloadAction<{
         column: Column;
-        start: Position;
-        end: Position;
+        columnPosition: ColumnCellPosition;
+        mousePosition: Position;
       }>
     ) {
-      const { column, start, end } = action.payload;
+      const { column, columnPosition, mousePosition } = action.payload;
       state.creatingRelationCurve = true;
       state.tempRelationCurveStartColumn = column;
-      state.tempRelationCurveStartPosition = start;
-      state.tempRelationCurveEndPosition = end;
+      state.tempRelationCurveStartPosition = {
+        x: columnPosition.x + columnPosition.width,
+        y: columnPosition.y + columnPosition.height / 2,
+      };
+      state.tempRelationCurveEndPosition = mousePosition;
     },
 
     stopCreatingRelationCurve(
       state,
       action: PayloadAction<{
         column: Column;
-        end: Position;
+        columnPosition: ColumnCellPosition;
+        mousePosition: Position;
       }>
     ) {
-      const { column, end } = action.payload;
-      state.creatingRelationCurve = false;
-      state.tempRelationCurveEndColumn = column;
-      state.tempRelationCurveEndPosition = end;
+      const fromColumn = state.tempRelationCurveStartColumn!;
+      const { column: toColumn } = action.payload;
+
+      if (toColumn.parentId === fromColumn!.parentId) {
+        resetTempCurve(state as DiagramState);
+        return;
+      }
+
+      const fromTableId = fromColumn.parentId;
+      const toTableId = toColumn.parentId;
+      let relation = new Relation(
+        fromTableId,
+        toTableId,
+        fromColumn.id,
+        toColumn.id
+      );
+
+      const curvePoints = findCurvePoints(
+        state.tables[fromColumn.parentId] as Table,
+        state.tables[toColumn.parentId] as Table,
+        fromColumn?.id,
+        toColumn.id
+      );
+
+      relation = relation.setCurvePoints(curvePoints);
+      state.relations[relation.id] = relation;
+      const editedTableA = state.tables[fromTableId].changeColumnRelationStatus(
+        fromColumn.id,
+        true
+      );
+      const editedTableB = state.tables[toTableId].changeColumnRelationStatus(
+        toColumn.id,
+        true
+      );
+
+      state.tables[fromTableId] = editedTableA;
+      state.tables[toTableId] = editedTableB;
+      resetTempCurve(state as DiagramState);
     },
 
     cancelCreatingRelationCurve(state) {
-      state.creatingRelationCurve = false;
-      state.tempRelationCurveStartColumn = null;
-      state.tempRelationCurveStartPosition = null;
-      state.tempRelationCurveEndColumn = null;
-      state.tempRelationCurveEndPosition = null;
+      resetTempCurve(state as DiagramState);
     },
   },
 });

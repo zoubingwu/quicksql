@@ -41,6 +41,7 @@ export class Column implements Constraint {
   public id: string;
   public length?: number;
   public comment: string = "";
+  public hasRelation: boolean = false;
 
   constructor(
     public name: string,
@@ -80,6 +81,12 @@ export class Column implements Constraint {
   setConstraint(key: keyof Constraint, value: boolean) {
     return produce(this, (draft) => {
       draft[key] = value;
+    });
+  }
+
+  setHasRelation(val: boolean) {
+    return produce(this, (draft) => {
+      draft.hasRelation = val;
     });
   }
 }

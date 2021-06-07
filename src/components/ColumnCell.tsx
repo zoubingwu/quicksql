@@ -7,7 +7,7 @@ import clsx from "clsx";
 export const ColumnCell: React.FC<{
   data: Column;
 }> = ({ data }) => {
-  const { id, name, parentId } = data;
+  const { id, name, parentId, hasRelation } = data;
   const dispatch = useAppDispatch();
   const ref = useRef<HTMLDivElement>(null);
   const creatingCurve = useAppSelector(
@@ -36,23 +36,33 @@ export const ColumnCell: React.FC<{
       .querySelector(".quicksql-diagram-editor")!
       .getBoundingClientRect();
 
+    const self = ref.current?.getBoundingClientRect()!;
+    const x = self.x - parent.x;
+    const y = self.y - parent.y;
+    const mousePositionRelativeToDiagramEditor = {
+      x: e.clientX,
+      y: e.clientY - parent.y,
+    };
+    const columnPositionRelativeToDiagramEditor = {
+      x,
+      y,
+      width: self.width,
+      height: self.height,
+    };
     if (!creatingCurve) {
-      const self = ref.current?.getBoundingClientRect()!;
-      const x = self.x - parent.x;
-      const y = self.y - parent.y;
-
       dispatch(
         actions.startCreatingRelationCurve({
           column: data,
-          start: { x: x + self.width, y: y + self.height / 2 },
-          end: { x: e.clientX, y: e.clientY - parent.y },
+          columnPosition: columnPositionRelativeToDiagramEditor,
+          mousePosition: mousePositionRelativeToDiagramEditor,
         })
       );
     } else {
       dispatch(
         actions.stopCreatingRelationCurve({
           column: data,
-          end: { x: e.clientX, y: e.clientY - parent.y },
+          columnPosition: columnPositionRelativeToDiagramEditor,
+          mousePosition: mousePositionRelativeToDiagramEditor,
         })
       );
     }
@@ -62,13 +72,15 @@ export const ColumnCell: React.FC<{
     <div
       ref={ref}
       onClick={handleCreateOrFinishCurve}
+      data-id={id}
       className={clsx(
         "quicksql-column-cell",
         "px-2 py-1 flex flex-row items-center justify-between hover:bg-gray-100 rounded border border-transparent",
         creatingCurve &&
           start?.id === id &&
           "bg-gray-100 border-dashed !border-light-blue-600",
-        creatingCurve && "!hover:border-dashed !hover:border-light-blue-600"
+        creatingCurve && "!hover:border-dashed !hover:border-light-blue-600",
+        hasRelation && "border-dashed !border-light-blue-600"
       )}
     >
       <EditableText value={name} onChange={handleNameChange} />

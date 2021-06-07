@@ -5,12 +5,45 @@ export interface Position {
   y: number;
 }
 
+export interface RectPosition extends Position {
+  width: number;
+  height: number;
+}
+
 export const toPoint = (p: Position): Point => [p.x, p.y];
 export const toPosition = (p: Point): Position => ({ x: p[0], y: p[1] });
 
-export const getWidthBetween2Position = (a: Position, b: Position) =>
-  Math.abs(a.x - b.x);
-export const getHeightBetween2Position = (a: Position, b: Position) =>
-  Math.abs(a.y - b.y);
+export const getWidthBetweenPositions = (...p: Position[]) => {
+  const mostLeft = Math.min(...p.map((p) => p.x));
+  const mostRight = Math.max(...p.map((p) => p.x));
+  return mostRight - mostLeft;
+};
+export const getHeightBetweenPositions = (...p: Position[]) => {
+  const mostTop = Math.min(...p.map((p) => p.y));
+  const mostBottom = Math.max(...p.map((p) => p.y));
+  return mostBottom - mostTop;
+};
 
-export const minus = (a: Point, b: Point): Point => [a[0] - b[0], a[1] - b[1]];
+export const moveLeftBy = (p: Point, range: number): Point => [
+  p[0] - range,
+  p[1],
+];
+
+export const moveRightBy = (p: Point, range: number): Point => [
+  p[0] + range,
+  p[1],
+];
+
+export const moveTopBy = (p: Point, range: number): Point => [
+  p[0],
+  p[1] - range,
+];
+
+export const moveBottomBy = (p: Point, range: number): Point => [
+  p[0],
+  p[1] + range,
+];
+
+export const moveXTo = (p: Point, x: number): Point => [x, p[1]];
+
+export const moveYTo = (p: Point, y: number): Point => [p[0], y];

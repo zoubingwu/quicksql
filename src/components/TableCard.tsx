@@ -58,8 +58,17 @@ export const TableCard: React.FC<{
   const isSelected = useAppSelector(
     (state) => state.diagram.selectedTable === id
   );
+  const creatingCurve = useAppSelector(
+    (state) => state.diagram.creatingRelationCurve
+  );
+  const relations = useAppSelector((state) =>
+    Object.values(state.diagram.relations).filter((r) =>
+      columns.some((c) => c.id === r.fromColumn || c.id === r.toColumn)
+    )
+  );
   const maxLayer = useAppSelector((state) => state.diagram.layers);
   const selectedTable = useAppSelector((state) => state.diagram.selectedTable);
+
   const handleDrop = useCallback(
     (e: DraggableEvent, data: DraggableData) => {
       if (data.x === position.x && data.y === position.y) return;
@@ -71,6 +80,9 @@ export const TableCard: React.FC<{
         },
       };
       dispatch(actions.updatePosition(payload));
+
+      // TODO also need to update relation curve in redux
+      // we only update it in component state during drag to avoid perf issue.
     },
     [id, position]
   );
@@ -91,22 +103,44 @@ export const TableCard: React.FC<{
   const handleClickOnTable = useCallback(
     (e: React.MouseEvent<HTMLDivElement>) => {
       e.stopPropagation();
-      if (id === selectedTable) return;
+      if (id === selectedTable || creatingCurve) return;
       dispatch(actions.setSelected(id));
     },
-    [id, selectedTable]
+    [id, selectedTable, creatingCurve]
+  );
+
+  const handleRelationCurveRecalc = useCallback(
+    (e: DraggableEvent, data: DraggableData) => {
+      relations.forEach((r) => {
+        console.log("posting");
+        window.postMessage(
+          {
+            id: r.id,
+            tableId: id,
+            position: {
+              x: data.x,
+              y: data.y,
+            },
+          },
+          "*"
+        );
+      });
+    },
+    [relations, id]
   );
 
   return (
     <Draggable
       handle=".quicksql-table-card-handle"
       onStart={handleMoveToTopLayer}
+      onDrag={handleRelationCurveRecalc}
       onStop={handleDrop}
       defaultPosition={DEFAULT_TABLE_POSITION}
       position={position}
     >
       <div
         className="quicksql-table-card absolute w-320px cursor-pointer"
+        data-id={id}
         style={{ zIndex: layer }}
         ref={targetRef}
         onClick={handleClickOnTable}
