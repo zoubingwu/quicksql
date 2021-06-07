@@ -3,6 +3,7 @@ import { EditableText } from "@blueprintjs/core";
 import { Column } from "../core/Column";
 import { actions, useAppDispatch, useAppSelector } from "../store";
 import clsx from "clsx";
+import { COLUMN_CELL_HEIGHT } from "../store/diagram.helpers";
 
 export const ColumnCell: React.FC<{
   data: Column;
@@ -73,6 +74,7 @@ export const ColumnCell: React.FC<{
       ref={ref}
       onClick={handleCreateOrFinishCurve}
       data-id={id}
+      style={{ height: COLUMN_CELL_HEIGHT }}
       className={clsx(
         "quicksql-column-cell",
         "px-2 py-1 flex flex-row items-center justify-between hover:bg-gray-100 rounded border border-transparent",

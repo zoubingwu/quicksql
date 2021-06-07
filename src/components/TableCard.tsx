@@ -15,6 +15,10 @@ import { Position } from "../core/Position";
 import { useAppDispatch, useAppSelector, actions } from "../store";
 import { ColumnCell } from "./ColumnCell";
 import { useHover } from "../hooks/useHover";
+import {
+  TABLE_CARD_HANDLE_HEIGHT,
+  TABLE_CARD_WIDTH,
+} from "../store/diagram.helpers";
 
 const MenuPopover: React.FC<{
   tableId: string;
@@ -153,9 +157,9 @@ const TableCard: React.FC<{
       position={position}
     >
       <div
-        className="quicksql-table-card absolute w-320px cursor-pointer"
+        className="quicksql-table-card absolute cursor-pointer"
         data-id={id}
-        style={{ zIndex: layer }}
+        style={{ zIndex: layer, width: TABLE_CARD_WIDTH }}
         ref={targetRef}
         onClick={handleClickOnTable}
         onContextMenu={(e) => {
@@ -163,7 +167,10 @@ const TableCard: React.FC<{
           e.stopPropagation();
         }}
       >
-        <div className="quicksql-table-card-handle font-bold px-2 py-1 flex justify-between cursor-move">
+        <div
+          style={{ height: TABLE_CARD_HANDLE_HEIGHT }}
+          className="quicksql-table-card-handle font-bold px-2 py-1 flex justify-between cursor-move"
+        >
           <EditableText
             value={name}
             placeholder="edit table name"
@@ -187,7 +194,7 @@ const TableCard: React.FC<{
         <div
           className={clsx(
             "quicksql-table-column",
-            "w-xs relative shadow-lg border rounded-md bg-white",
+            "relative shadow-lg border rounded-md bg-white",
             isSelected && "border-light-blue-600"
           )}
         >
