@@ -10,7 +10,7 @@ import {
   Position as BlueprintPosition,
   EditableText,
 } from "@blueprintjs/core";
-import { DEFAULT_TABLE_POSITION, Table } from "../core/Table";
+import { Table } from "../core/Table";
 import { Position } from "../core/Position";
 import { useAppDispatch, useAppSelector, actions } from "../store";
 import { ColumnCell } from "./ColumnCell";
@@ -76,7 +76,8 @@ export interface TableCardPostMessageData {
 const TableCard: React.FC<{
   data: Table;
 }> = ({ data }) => {
-  const { id, name, position, columns, layer } = data;
+  const { id, name, columns, layer } = data;
+  const position = useAppSelector((state) => state.diagram.positions[id]);
   const [targetRef, isHovering] = useHover<HTMLDivElement>();
   const dispatch = useAppDispatch();
   const isSelected = useAppSelector(
@@ -171,7 +172,6 @@ const TableCard: React.FC<{
       onStart={handleMoveToTopLayer}
       onDrag={handleRelationCurveRecalc}
       onStop={handleDrop}
-      defaultPosition={DEFAULT_TABLE_POSITION}
       position={position}
     >
       <div

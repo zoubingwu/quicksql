@@ -6,13 +6,11 @@ import { Position } from "./Position";
 
 export type ColumnMap = Record<string, Column>;
 
-export const DEFAULT_TABLE_POSITION = { x: 50, y: 50 };
-
 export class Table {
   private [immerable] = true;
 
   static create(name: string = "table_name") {
-    let table = new Table(name, [], DEFAULT_TABLE_POSITION);
+    let table = new Table(name, []);
     table = table.addNewColumn(
       new Column("id", "INT", table.id, { AI: true, PK: true, NN: true })
     );
@@ -30,11 +28,7 @@ export class Table {
    */
   public layer: number;
 
-  constructor(
-    public name: string,
-    public columns: Column[],
-    public position: Position
-  ) {
+  constructor(public name: string, public columns: Column[]) {
     this.columnMap = this.columns.reduce((acc, next) => {
       acc.set(next.id, next);
       return acc;
@@ -43,7 +37,7 @@ export class Table {
   }
 
   public clone() {
-    let newTable = new Table(this.name, [], DEFAULT_TABLE_POSITION);
+    let newTable = new Table(this.name, []);
 
     this.columns.forEach((c) => {
       newTable = newTable.addNewColumn(c.clone(newTable.id));
@@ -55,12 +49,6 @@ export class Table {
   public setName(name: string) {
     return produce(this, (draft) => {
       draft.name = name;
-    });
-  }
-
-  public setPosition(p: Position) {
-    return produce(this, (draft) => {
-      draft.position = p;
     });
   }
 

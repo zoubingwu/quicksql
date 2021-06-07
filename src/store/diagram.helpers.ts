@@ -1,4 +1,3 @@
-import { Table } from "../core/Table";
 import {
   Position,
   Point,
@@ -9,23 +8,27 @@ import {
   moveLeftBy,
 } from "../core/Position";
 import { DiagramState } from "./diagram";
+import { Column } from "../core/Column";
 
 export function isCloseEnough(a: Position, b: Position): boolean {
   return Math.abs(a.x - b.x) <= 10 && Math.abs(a.y - b.y) <= 10;
 }
 
+export const DEFAULT_TABLE_POSITION: Position = { x: 50, y: 50 };
+
 export function findPositionWhenInsertNewTable(
-  allTables: Table[],
-  target: Table
-) {
-  while (allTables.some((t) => isCloseEnough(t.position, target.position))) {
-    target = target.setPosition({
-      x: target.position.x,
-      y: target.position.y + 150,
-    });
+  allPositions: Record<string, Position>
+): Position {
+  const ps = Object.values(allPositions);
+
+  // copy to prevent mutate
+  const newPosition = { ...DEFAULT_TABLE_POSITION };
+
+  while (ps.some((p) => isCloseEnough(p, newPosition))) {
+    newPosition.y = newPosition.y + 150;
   }
 
-  return target;
+  return newPosition;
 }
 
 export function resetTempCurve(state: DiagramState) {
@@ -38,21 +41,6 @@ export function resetTempCurve(state: DiagramState) {
 export const TABLE_CARD_WIDTH = 280;
 export const TABLE_CARD_HANDLE_HEIGHT = 26;
 export const COLUMN_CELL_HEIGHT = 28;
-
-export function findColumnPosition(
-  table: Table,
-  columnId: string
-): RectPosition {
-  const position = table.position;
-  const index = table.columns.findIndex((c) => c.id === columnId);
-  return {
-    x: position.x,
-    y: position.y + TABLE_CARD_HANDLE_HEIGHT + COLUMN_CELL_HEIGHT * index,
-    width: TABLE_CARD_WIDTH,
-    height: COLUMN_CELL_HEIGHT,
-  };
-}
-
 const EXPAND_RANGE = 100;
 
 /**
@@ -142,14 +130,45 @@ function findRectanglePoints(
   }
 }
 
+interface ColumnPositionData {
+  tablePosition: Position;
+  columnIndex: number;
+}
+
+export function getColumnPositionData(
+  targetColumn: Column,
+  columns: Column[],
+  tablePositions: Record<string, Position>
+) {
+  const columnIndex = columns.findIndex((c) => c.id === targetColumn.id);
+  const tableId = targetColumn.parentId;
+  const tablePosition = tablePositions[tableId];
+
+  return {
+    tablePosition,
+    columnIndex,
+  };
+}
+
+export function findColumnPosition(data: ColumnPositionData): RectPosition {
+  const { tablePosition, columnIndex } = data;
+  return {
+    x: tablePosition.x,
+    y:
+      tablePosition.y +
+      TABLE_CARD_HANDLE_HEIGHT +
+      COLUMN_CELL_HEIGHT * columnIndex,
+    width: TABLE_CARD_WIDTH,
+    height: COLUMN_CELL_HEIGHT,
+  };
+}
+
 export function findCurvePoints(
-  fromTable: Table,
-  toTable: Table,
-  fromColumnId: string,
-  toColumnId: string
+  a: ColumnPositionData,
+  b: ColumnPositionData
 ): Point[] {
-  const fromColumnRect = findColumnPosition(fromTable, fromColumnId);
-  const toColumnRect = findColumnPosition(toTable, toColumnId);
+  const fromColumnRect = findColumnPosition(a);
+  const toColumnRect = findColumnPosition(b);
   const points = findRectanglePoints(fromColumnRect, toColumnRect);
 
   return points;

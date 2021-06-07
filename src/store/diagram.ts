@@ -8,13 +8,16 @@ import { Point, Position } from "../core/Position";
 import {
   findCurvePoints,
   findPositionWhenInsertNewTable,
+  getColumnPositionData,
   resetTempCurve,
+  DEFAULT_TABLE_POSITION,
 } from "./diagram.helpers";
 
 enableMapSet();
 
 export interface DiagramState {
   tables: Record<string, Table>;
+  positions: Record<string, Position>;
   relations: Record<string, Relation>;
   layers: number;
   selectedTable: string | null;
@@ -26,10 +29,12 @@ export interface DiagramState {
 }
 
 const defaultTable = Table.create();
-
 const initialState: DiagramState = {
   tables: {
     [defaultTable.id]: defaultTable,
+  },
+  positions: {
+    [defaultTable.id]: DEFAULT_TABLE_POSITION,
   },
   relations: {},
   layers: 1,
@@ -48,13 +53,10 @@ export const diagramSlice = createSlice({
   initialState,
   reducers: {
     addNewTable(state) {
-      let newTable = Table.create().setLayer(state.layers + 1);
-      const currentTables = Object.values(state.tables);
-      newTable = findPositionWhenInsertNewTable(
-        currentTables as Table[],
-        newTable
-      );
+      const newTable = Table.create().setLayer(state.layers + 1);
+      const newPosition = findPositionWhenInsertNewTable(state.positions);
       state.tables[newTable.id] = newTable;
+      state.positions[newTable.id] = newPosition;
       state.layers = newTable.layer;
     },
 
@@ -69,14 +71,10 @@ export const diagramSlice = createSlice({
     duplicateTable(state, action: PayloadAction<string>) {
       const id = action.payload;
       if (id in state.tables) {
-        let newTable = state.tables[id].clone();
-        const currentTables = Object.values(state.tables);
-        newTable = findPositionWhenInsertNewTable(
-          currentTables as Table[],
-          newTable
-        );
-        newTable = newTable.setLayer(state.layers + 1);
+        const newTable = state.tables[id].clone().setLayer(state.layers + 1);
+        const newPosition = findPositionWhenInsertNewTable(state.positions);
         state.tables[newTable.id] = newTable;
+        state.positions[newTable.id] = newPosition;
         state.layers = newTable.layer;
       }
     },
@@ -87,7 +85,7 @@ export const diagramSlice = createSlice({
     ) {
       const { id, position } = action.payload;
       if (id in state.tables) {
-        state.tables[id] = state.tables[id].setPosition(position);
+        state.positions[id] = position;
       }
     },
 
@@ -221,12 +219,18 @@ export const diagramSlice = createSlice({
         toColumn.id
       );
 
-      const curvePoints = findCurvePoints(
-        state.tables[fromColumn.parentId] as Table,
-        state.tables[toColumn.parentId] as Table,
-        fromColumn?.id,
-        toColumn.id
+      const a = getColumnPositionData(
+        fromColumn as Column,
+        state.tables[fromColumn.parentId].columns as Column[],
+        state.positions
       );
+      const b = getColumnPositionData(
+        toColumn as Column,
+        state.tables[toColumn.parentId].columns as Column[],
+        state.positions
+      );
+
+      const curvePoints = findCurvePoints(a, b);
 
       relation = relation.setCurvePoints(curvePoints);
       state.relations[relation.id] = relation;

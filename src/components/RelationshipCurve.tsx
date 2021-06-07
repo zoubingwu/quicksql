@@ -11,7 +11,10 @@ import {
 } from "../core/Position";
 import { Relation } from "../core/Relation";
 import { actions, useAppSelector } from "../store";
-import { findCurvePoints } from "../store/diagram.helpers";
+import {
+  findCurvePoints,
+  getColumnPositionData,
+} from "../store/diagram.helpers";
 import { BasisCurve } from "./Curve";
 import type { TableCardPostMessageData } from "./TableCard";
 
@@ -89,7 +92,11 @@ export const RelationshipCurve: React.FC<{
     data;
 
   const [curve, setCurve] = useState<Point[]>(curvePoints);
-  const tables = useAppSelector((state) => state.diagram.tables);
+  const parentTable = useAppSelector(
+    (state) => state.diagram.tables[fromTableId]
+  );
+  const childTable = useAppSelector((state) => state.diagram.tables[toTableId]);
+  const positions = useAppSelector((state) => state.diagram.positions);
   const dispatch = useDispatch();
 
   const svgStyle = useMemo(() => {
@@ -108,27 +115,21 @@ export const RelationshipCurve: React.FC<{
 
   const handleRecalculatePoints = useCallback(
     (e: MessageEvent<TableCardPostMessageData>) => {
-      if (!e.data.type?.startsWith("quicksql/") || id !== e.data.rid) {
+      if (!e.data.type?.startsWith("quicksql") || id !== e.data.rid) {
         return;
       }
 
-      const tableId = e.data.tid;
-      let parentTable = tables[fromTableId];
-      let childTable = tables[toTableId];
-      parentTable =
-        fromTableId === tableId
-          ? parentTable.setPosition(e.data.position)
-          : parentTable;
-      childTable =
-        toTableId === tableId
-          ? childTable.setPosition(e.data.position)
-          : childTable;
-      const points = findCurvePoints(
-        parentTable,
-        childTable,
-        fromColumnId,
-        toColumnId
+      const a = getColumnPositionData(
+        parentTable.columnMap.get(fromTableId)!,
+        parentTable.columns,
+        positions
       );
+      const b = getColumnPositionData(
+        childTable.columnMap.get(toTableId)!,
+        childTable.columns,
+        positions
+      );
+      const points = findCurvePoints(a, b);
 
       setCurve(points);
 
@@ -136,7 +137,7 @@ export const RelationshipCurve: React.FC<{
         dispatch(actions.setRelationCurve({ id: e.data.rid, points }));
       }
     },
-    [tables, fromTableId, toTableId, fromColumnId, toColumnId]
+    [parentTable, childTable, fromTableId, toTableId, fromColumnId, toColumnId]
   );
 
   const points: Point[] = useMemo(() => {
