@@ -204,8 +204,16 @@ export const diagramSlice = createSlice({
     ) {
       const fromColumn = state.tempRelationCurveStartColumn!;
       const { column: toColumn } = action.payload;
-
-      if (toColumn.parentId === fromColumn!.parentId) {
+      const relations = Object.values(state.relations);
+      if (
+        toColumn.parentId === fromColumn!.parentId ||
+        relations.some(
+          (r) =>
+            (r.fromColumnId === fromColumn.id &&
+              r.toColumnId === toColumn.id) ||
+            (r.fromColumnId === toColumn.id && r.toColumnId === toColumn.id)
+        )
+      ) {
         resetTempCurve(state as DiagramState);
         return;
       }
