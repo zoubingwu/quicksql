@@ -119,15 +119,19 @@ export const RelationshipCurve: React.FC<{
         return;
       }
 
+      const ps = Object.assign({}, positions, {
+        [e.data.tid]: e.data.position,
+      } as Record<string, Position>);
+
       const a = getColumnPositionData(
-        parentTable.columnMap.get(fromTableId)!,
+        parentTable.columnMap.get(fromColumnId)!,
         parentTable.columns,
-        positions
+        ps
       );
       const b = getColumnPositionData(
-        childTable.columnMap.get(toTableId)!,
+        childTable.columnMap.get(toColumnId)!,
         childTable.columns,
-        positions
+        ps
       );
       const points = findCurvePoints(a, b);
 
@@ -137,7 +141,15 @@ export const RelationshipCurve: React.FC<{
         dispatch(actions.setRelationCurve({ id: e.data.rid, points }));
       }
     },
-    [parentTable, childTable, fromTableId, toTableId, fromColumnId, toColumnId]
+    [
+      parentTable,
+      childTable,
+      fromTableId,
+      toTableId,
+      fromColumnId,
+      toColumnId,
+      positions,
+    ]
   );
 
   const points: Point[] = useMemo(() => {
