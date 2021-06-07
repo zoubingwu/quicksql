@@ -178,7 +178,7 @@ const TableCard: React.FC<{
           )}
         >
           {columns.map((c) => (
-            <ColumnCell key={c.name} data={c} />
+            <ColumnCell key={c.id} data={c} />
           ))}
         </div>
       </div>
