@@ -7,10 +7,11 @@ import {
   MenuItem,
   MenuDivider,
   Popover,
-  Position,
+  Position as BlueprintPosition,
   EditableText,
 } from "@blueprintjs/core";
 import { DEFAULT_TABLE_POSITION, Table } from "../core/Table";
+import { Position } from "../core/Position";
 import { useAppDispatch, useAppSelector, actions } from "../store";
 import { ColumnCell } from "./ColumnCell";
 import { useHover } from "../hooks/useHover";
@@ -49,6 +50,20 @@ const MenuPopover: React.FC<{
   );
 };
 
+export interface TableCardPostMessageData {
+  /**
+   * relation id
+   */
+  id: string;
+
+  tableId: string;
+
+  /**
+   * table card postion when dragging
+   */
+  position: Position;
+}
+
 const TableCard: React.FC<{
   data: Table;
 }> = ({ data }) => {
@@ -63,7 +78,7 @@ const TableCard: React.FC<{
   );
   const relations = useAppSelector((state) =>
     Object.values(state.diagram.relations).filter((r) =>
-      columns.some((c) => c.id === r.fromColumn || c.id === r.toColumn)
+      columns.some((c) => c.id === r.fromColumnId || c.id === r.toColumnId)
     )
   );
   const maxLayer = useAppSelector((state) => state.diagram.layers);
@@ -112,7 +127,6 @@ const TableCard: React.FC<{
   const handleRelationCurveRecalc = useCallback(
     (e: DraggableEvent, data: DraggableData) => {
       relations.forEach((r) => {
-        console.log("posting");
         window.postMessage(
           {
             id: r.id,
@@ -121,8 +135,8 @@ const TableCard: React.FC<{
               x: data.x,
               y: data.y,
             },
-          },
-          "*"
+          } as TableCardPostMessageData,
+          window.location.origin
         );
       });
     },
@@ -158,7 +172,7 @@ const TableCard: React.FC<{
 
           <Popover
             content={<MenuPopover tableId={id} />}
-            position={Position.RIGHT_BOTTOM}
+            position={BlueprintPosition.RIGHT_BOTTOM}
           >
             <Icon
               icon="menu"

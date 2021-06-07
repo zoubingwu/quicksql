@@ -10,10 +10,10 @@ export class Relation {
   public curvePoints: Point[];
 
   constructor(
-    public fromTable: string,
-    public toTable: string,
-    public fromColumn: string,
-    public toColumn: string
+    public fromTableId: string,
+    public toTableId: string,
+    public fromColumnId: string,
+    public toColumnId: string
   ) {
     this.id = nanoid();
   }

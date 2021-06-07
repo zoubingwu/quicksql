@@ -5,11 +5,14 @@ import {
   Position,
   toPosition,
   Point,
+  moveLeftBy,
+  moveUpBy,
 } from "../core/Position";
 import { Relation } from "../core/Relation";
 import { useAppSelector } from "../store";
 import { findCurvePoints } from "../store/diagram.helpers";
 import { BasisCurve } from "./Curve";
+import type { TableCardPostMessageData } from "./TableCard";
 
 export const TempRelationshipCurve: React.FC<{
   mousePosition: Position | null;
@@ -81,7 +84,8 @@ export const TempRelationshipCurve: React.FC<{
 export const RelationshipCurve: React.FC<{
   data: Relation;
 }> = ({ data }) => {
-  const { curvePoints, id, fromTable, fromColumn, toTable, toColumn } = data;
+  const { curvePoints, id, fromTableId, fromColumnId, toTableId, toColumnId } =
+    data;
 
   const [curve, setCurve] = useState<Point[]>(curvePoints);
 
@@ -89,34 +93,57 @@ export const RelationshipCurve: React.FC<{
 
   const svgStyle = useMemo(() => {
     const left = Math.min(...curve.map((p) => p[0]));
-    const top = Math.min(...curve.map((p) => p[1]));
+
+    // add 2px more height, move svg squre 1px up
+    // move starting point 1px down and ending point 1px up
+    // so the curve won't be cut by edge
+    const top = Math.min(...curve.map((p) => p[1])) - 1;
     const width = getWidthBetweenPositions(...curve.map((p) => toPosition(p)));
-    const height = getHeightBetweenPositions(
-      ...curve.map((p) => toPosition(p))
-    );
-    return { left, top, width, height };
+    const height =
+      getHeightBetweenPositions(...curve.map((p) => toPosition(p))) + 2;
+    const styles = { left, top, width, height };
+
+    return styles;
   }, [curve]);
 
   const handleRecalculatePoints = useCallback(
-    (e: MessageEvent) => {
+    (e: MessageEvent<TableCardPostMessageData>) => {
       if (id !== e.data.id) {
         return;
       }
+
       const tableId = e.data.tableId;
-      const parent =
-        fromTable === tableId
-          ? tables[fromTable].setPosition(e.data.position)
-          : tables[fromTable];
-      const child =
-        toTable === tableId
-          ? tables[toTable].setPosition(e.data.position)
-          : tables[toTable];
-      const points = findCurvePoints(parent, child, fromColumn, toColumn);
-      const nextCurve = points;
-      setCurve(nextCurve);
+      let parentTable = tables[fromTableId];
+      let childTable = tables[toTableId];
+      parentTable =
+        fromTableId === tableId
+          ? parentTable.setPosition(e.data.position)
+          : parentTable;
+      childTable =
+        toTableId === tableId
+          ? childTable.setPosition(e.data.position)
+          : childTable;
+      const points = findCurvePoints(
+        parentTable,
+        childTable,
+        fromColumnId,
+        toColumnId
+      );
+
+      setCurve(points);
     },
-    [tables, fromTable, toTable, fromColumn, toColumn]
+    [tables, fromTableId, toTableId, fromColumnId, toColumnId]
   );
+
+  const points: Point[] = useMemo(() => {
+    return curve.map((p) => {
+      // the original point was relative to the diagram editor
+      // we must make it relative to the svg position to render
+      const p1 = moveLeftBy(p, svgStyle.left);
+      const p2 = moveUpBy(p1, svgStyle.top);
+      return p2;
+    });
+  }, [curve, svgStyle]);
 
   useEffect(() => {
     window.addEventListener("message", handleRecalculatePoints);
@@ -129,9 +156,7 @@ export const RelationshipCurve: React.FC<{
   return (
     <svg className="absolute" style={svgStyle}>
       <BasisCurve
-        data={curve.map(
-          (p) => [p[0] - svgStyle.left, p[1] - svgStyle.top] as Point
-        )}
+        data={points}
         stroke="#106BA3"
         strokeWidth={2}
         showPoints={false}

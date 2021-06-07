@@ -34,12 +34,12 @@ export const moveRightBy = (p: Point, range: number): Point => [
   p[1],
 ];
 
-export const moveTopBy = (p: Point, range: number): Point => [
+export const moveUpBy = (p: Point, range: number): Point => [
   p[0],
   p[1] - range,
 ];
 
-export const moveBottomBy = (p: Point, range: number): Point => [
+export const moveDownBy = (p: Point, range: number): Point => [
   p[0],
   p[1] + range,
 ];
