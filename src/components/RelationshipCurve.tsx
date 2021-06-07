@@ -1,4 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
+import { useDispatch } from "react-redux";
 import {
   getHeightBetweenPositions,
   getWidthBetweenPositions,
@@ -9,7 +10,7 @@ import {
   moveUpBy,
 } from "../core/Position";
 import { Relation } from "../core/Relation";
-import { useAppSelector } from "../store";
+import { actions, useAppSelector } from "../store";
 import { findCurvePoints } from "../store/diagram.helpers";
 import { BasisCurve } from "./Curve";
 import type { TableCardPostMessageData } from "./TableCard";
@@ -88,19 +89,18 @@ export const RelationshipCurve: React.FC<{
     data;
 
   const [curve, setCurve] = useState<Point[]>(curvePoints);
-
   const tables = useAppSelector((state) => state.diagram.tables);
+  const dispatch = useDispatch();
 
   const svgStyle = useMemo(() => {
-    const left = Math.min(...curve.map((p) => p[0]));
-
     // add 2px more height, move svg squre 1px up
     // move starting point 1px down and ending point 1px up
     // so the curve won't be cut by edge
     const top = Math.min(...curve.map((p) => p[1])) - 1;
-    const width = getWidthBetweenPositions(...curve.map((p) => toPosition(p)));
-    const height =
-      getHeightBetweenPositions(...curve.map((p) => toPosition(p))) + 2;
+    const left = Math.min(...curve.map((p) => p[0]));
+    const ps = curve.map((p) => toPosition(p));
+    const width = getWidthBetweenPositions(...ps);
+    const height = getHeightBetweenPositions(...ps) + 2;
     const styles = { left, top, width, height };
 
     return styles;
@@ -108,11 +108,11 @@ export const RelationshipCurve: React.FC<{
 
   const handleRecalculatePoints = useCallback(
     (e: MessageEvent<TableCardPostMessageData>) => {
-      if (id !== e.data.id) {
+      if (!e.data.type?.startsWith("quicksql/") || id !== e.data.rid) {
         return;
       }
 
-      const tableId = e.data.tableId;
+      const tableId = e.data.tid;
       let parentTable = tables[fromTableId];
       let childTable = tables[toTableId];
       parentTable =
@@ -131,6 +131,10 @@ export const RelationshipCurve: React.FC<{
       );
 
       setCurve(points);
+
+      if (e.data.type === "quicksql/drop") {
+        dispatch(actions.setRelationCurve({ id: e.data.rid, points }));
+      }
     },
     [tables, fromTableId, toTableId, fromColumnId, toColumnId]
   );

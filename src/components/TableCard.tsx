@@ -55,15 +55,20 @@ const MenuPopover: React.FC<{
 };
 
 export interface TableCardPostMessageData {
+  type: "quicksql/dragging" | "quicksql/drop";
+
   /**
-   * relation id
+   * id of the relation being affected
    */
-  id: string;
-
-  tableId: string;
+  rid: string;
 
   /**
-   * table card postion when dragging
+   * id of the table being dragged
+   */
+  tid: string;
+
+  /**
+   * table card position when dragging
    */
   position: Position;
 }
@@ -100,10 +105,22 @@ const TableCard: React.FC<{
       };
       dispatch(actions.updatePosition(payload));
 
-      // TODO also need to update relation curve in redux
-      // we only update it in component state during drag to avoid perf issue.
+      relations.forEach((r) => {
+        window.postMessage(
+          {
+            type: "quicksql/drop",
+            tid: id,
+            rid: r.id,
+            position: {
+              x: data.x,
+              y: data.y,
+            },
+          } as TableCardPostMessageData,
+          window.location.origin
+        );
+      });
     },
-    [id, position]
+    [id, position, relations]
   );
 
   const handleTableNameChange = useCallback(
@@ -133,8 +150,9 @@ const TableCard: React.FC<{
       relations.forEach((r) => {
         window.postMessage(
           {
-            id: r.id,
-            tableId: id,
+            type: "quicksql/dragging",
+            rid: r.id,
+            tid: id,
             position: {
               x: data.x,
               y: data.y,

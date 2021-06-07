@@ -4,7 +4,7 @@ import { Column, Constraint } from "../core/Column";
 import { DataType } from "../core/DataType";
 import { Relation } from "../core/Relation";
 import { Table } from "../core/Table";
-import { Position } from "../core/Position";
+import { Point, Position } from "../core/Position";
 import {
   findCurvePoints,
   findPositionWhenInsertNewTable,
@@ -246,6 +246,17 @@ export const diagramSlice = createSlice({
 
     cancelCreatingRelationCurve(state) {
       resetTempCurve(state as DiagramState);
+    },
+
+    setRelationCurve(
+      state,
+      action: PayloadAction<{
+        id: string;
+        points: Point[];
+      }>
+    ) {
+      const { id, points } = action.payload;
+      state.relations[id] = state.relations[id].setCurvePoints(points);
     },
   },
 });
