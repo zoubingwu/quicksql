@@ -1,5 +1,5 @@
 import React from "react";
-import { line, curveBasis } from "d3-shape";
+import { line, curveBasis, symbolTriangle } from "d3-shape";
 
 type PointElement = (
   center: [number, number],
@@ -40,7 +40,36 @@ export function Curve({
 }: CurveProps) {
   return (
     <>
-      <path d={path} stroke="black" fill="transparent" {...props} />
+      <defs>
+        <marker
+          id="head"
+          orient="auto"
+          markerWidth="10"
+          markerHeight="8"
+          refX="0"
+          refY="3.5"
+          markerUnits="userSpaceOnUse"
+          stroke={props.stroke}
+        >
+          <polyline
+            points="1 1, 9 5, 1 7"
+            vectorEffect="non-scaling-stroke"
+            stroke={props.stroke}
+            fill="transparent"
+            strokeWidth="2"
+          />
+        </marker>
+      </defs>
+
+      <path
+        d={path}
+        stroke="black"
+        fill="transparent"
+        {...props}
+        marker-end="url(#head)"
+        strokeDasharray="11,5"
+      />
+
       {showPoints &&
         data.map((p, i) => (
           <circle

@@ -8,6 +8,7 @@ import {
   Point,
   moveLeftBy,
   moveUpBy,
+  moveRightBy,
 } from "../core/Position";
 import { Relation } from "../core/Relation";
 import { actions, useAppSelector } from "../store";
@@ -101,16 +102,19 @@ export const RelationshipCurve: React.FC<{
   const dispatch = useDispatch();
 
   const svgStyle = useMemo(() => {
-    // add 2px more height, move svg squre 1px up
+    // add 10px more height, move svg squre 1px up
     // move starting point 1px down and ending point 1px up
     // so the curve won't be cut by edge
-    const top = Math.min(...curve.map((p) => p[1])) - 1;
+    const top = Math.min(...curve.map((p) => p[1])) - 5;
     const left = Math.min(...curve.map((p) => p[0]));
     const ps = curve.map((p) => toPosition(p));
     const width = getWidthBetweenPositions(...ps);
-    const height = getHeightBetweenPositions(...ps) + 2;
+    const height = getHeightBetweenPositions(...ps) + 10;
     const styles = { left, top, width, height };
 
+    // if (import.meta.env.DEV) {
+    //   Object.assign(styles, { border: '1px solid red' })
+    // }
     return styles;
   }, [curve]);
 
@@ -154,13 +158,19 @@ export const RelationshipCurve: React.FC<{
   );
 
   const points: Point[] = useMemo(() => {
-    return curve.map((p) => {
+    const corrected = curve.map((p, i) => {
       // the original point was relative to the diagram editor
       // we must make it relative to the svg position to render
-      const p1 = moveLeftBy(p, svgStyle.left);
-      const p2 = moveUpBy(p1, svgStyle.top);
-      return p2;
+      return moveUpBy(moveLeftBy(p, svgStyle.left), svgStyle.top);
     });
+
+    // give extra space to arrow head!
+    const secondLast = corrected[corrected.length - 2];
+    const last = corrected[corrected.length - 1];
+    corrected[corrected.length - 1] =
+      secondLast[0] > last[0] ? moveRightBy(last, 10) : moveLeftBy(last, 10);
+
+    return corrected;
   }, [curve, svgStyle]);
 
   useEffect(() => {
