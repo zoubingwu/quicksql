@@ -187,13 +187,16 @@ const TableCard: React.FC<{
       >
         <div
           style={{ height: TABLE_CARD_HANDLE_HEIGHT }}
-          className="quicksql-table-card-handle font-bold px-2 py-1 flex justify-between cursor-move"
+          className="font-bold px-2 py-1 flex justify-between "
         >
-          <EditableText
-            value={name}
-            placeholder="edit table name"
-            onChange={handleTableNameChange}
-          />
+          <div className="w-full flex">
+            <EditableText
+              value={name}
+              placeholder="edit table name"
+              onChange={handleTableNameChange}
+            />
+            <div className="quicksql-table-card-handle cursor-move flex-1"></div>
+          </div>
 
           <Popover
             content={<MenuPopover tableId={id} />}
