@@ -33,6 +33,8 @@ export const ColumnCell: React.FC<{
   );
 
   const handleCreateOrFinishCurve = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (e.currentTarget !== e.target) return;
+
     const parent = document
       .querySelector(".quicksql-diagram-editor")!
       .getBoundingClientRect();
