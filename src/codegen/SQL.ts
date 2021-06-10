@@ -1,3 +1,4 @@
+import { Relation } from "../core/Relation";
 import { Table } from "../core/Table";
 import { TargetLanguage, TargetOptions } from "./TargetLanguage";
 
@@ -7,10 +8,8 @@ export class SQLTarget extends TargetLanguage {
 
   hlImports = () => import("prismjs/components/prism-sql");
 
-  emit(tableRecords: Record<string, Table>, options: TargetOptions) {
+  emit(tables: Table[], relations: Relation[], options: TargetOptions) {
     this.content = "";
-
-    const tables = Object.values(tableRecords);
 
     const prefixTableName = (name: string) => {
       return options.prefixTable && options.diagramName
@@ -58,6 +57,21 @@ export class SQLTarget extends TargetLanguage {
         this.emitComma();
         this.emitNewLine();
       });
+
+      relations
+        .filter((r) => r.fromTableId === table.id)
+        .forEach((r) => {
+          this.emitIndent(indent);
+          this.emitCode(
+            `FOREIGN KEY(${table.columnMap.get(r.fromColumnId)!.name}) `
+          );
+          const toTable = tables.find((t) => t.id === r.toTableId);
+          this.emitCodeLine(
+            `REFERENCES ${toTable!.name}(${
+              toTable!.columnMap.get(r.toColumnId)!.name
+            }),`
+          );
+        });
 
       this.emitIndent(indent);
       this.emitCodeLine(

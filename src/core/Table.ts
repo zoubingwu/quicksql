@@ -2,7 +2,7 @@ import { immerable, produce } from "immer";
 import { nanoid } from "nanoid";
 import { Column, Constraint } from "./Column";
 import { DataType } from "./DataType";
-import { Position } from "./Position";
+import { Relation } from "./Relation";
 
 export type ColumnMap = Record<string, Column>;
 
@@ -22,6 +22,7 @@ export class Table {
 
   public columnMap: Map<string, Column>;
   public id: string;
+  public relations: Relation[] = [];
 
   /**
    * for UI z-index

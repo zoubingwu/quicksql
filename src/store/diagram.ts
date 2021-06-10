@@ -29,6 +29,7 @@ export interface DiagramState {
 }
 
 const defaultTable = Table.create();
+
 const initialState: DiagramState = {
   tables: {
     [defaultTable.id]: defaultTable,

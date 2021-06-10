@@ -11,19 +11,24 @@ export const CodeArea: React.FC = () => {
   );
   const content = useAppSelector((state) => state.diagram.generatedCode);
   const tables = useAppSelector((state) => state.diagram.tables);
+  const relations = useAppSelector((state) => state.diagram.relations);
   const showCode = useAppSelector((state) => state.globalOptions.showCode);
   const targetOptions = useAppSelector(
     (state) => state.globalOptions.targetOptions
   );
   const dispatch = useAppDispatch();
 
-  const handleCodeGenerate = async () => {
-    const c = currentTarget.emit(tables, targetOptions);
+  const handleCodeGenerate = useCallback(async () => {
+    const c = currentTarget.emit(
+      Object.values(tables),
+      Object.values(relations),
+      targetOptions
+    );
     if (!(currentTarget.language in Prism.languages)) {
       await currentTarget.hlImports();
     }
     dispatch(actions.setGeneratedCode(c));
-  };
+  }, [tables, relations, targetOptions, currentTarget]);
 
   useEffect(() => {
     handleCodeGenerate();

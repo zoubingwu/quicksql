@@ -1,3 +1,4 @@
+import { Relation } from "../core/Relation";
 import { Table } from "../core/Table";
 
 export interface TargetOptions {
@@ -69,7 +70,8 @@ export abstract class TargetLanguage {
   }
 
   public abstract emit(
-    tables: Record<string, Table>,
+    tables: Table[],
+    relations: Relation[],
     options: TargetOptions
   ): string;
 }
