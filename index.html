@@ -21,19 +21,24 @@
       }
     </style>
 
-    <!-- Global site tag (gtag.js) - Google Analytics -->
-    <script
-      async
-      src="https://www.googletagmanager.com/gtag/js?id=G-B7SD9G36LH"
-    ></script>
     <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag() {
-        dataLayer.push(arguments);
-      }
-      gtag("js", new Date());
+      (function() {
+        if (import.meta.env.PROD) {
+          var script = document.createElement('scripts');
+          script.src = 'https://www.googletagmanager.com/gtag/js?id=G-B7SD9G36LH';
+          script.async = true;
 
-      gtag("config", "G-B7SD9G36LH");
+          window.dataLayer = window.dataLayer || [];
+          function gtag() {
+            dataLayer.push(arguments);
+          }
+          gtag("js", new Date());
+
+          gtag("config", "G-B7SD9G36LH");
+
+          document.body.appendChild(script);
+        };
+      })()
     </script>
   </head>
 
