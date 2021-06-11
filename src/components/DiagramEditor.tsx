@@ -78,7 +78,7 @@ export const DiagramEditor: React.FC = () => {
       className={clsx(
         "quicksql-diagram-editor",
         "flex-shrink-0 flex-grow-0 overflow-hidden relative transition-all",
-        showCode ? "w-2/3" : "w-full",
+        showCode ? "w-3/4" : "w-full",
         creatingCurve && "cursor-pointer"
       )}
       ref={ref}

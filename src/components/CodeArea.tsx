@@ -42,7 +42,7 @@ export const CodeArea: React.FC = () => {
     <div
       className={clsx(
         "quicksql-code-area flex-shrink-0 flex-grow-0 relative transition-all overflow-hidden",
-        showCode ? "w-1/3" : "w-0"
+        showCode ? "w-1/4" : "w-0"
       )}
     >
       <pre className="h-full !m-0 !bg-dark-200 !text-xs">
