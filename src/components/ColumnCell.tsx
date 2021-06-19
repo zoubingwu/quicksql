@@ -38,9 +38,11 @@ export const ColumnCell: React.FC<{
   const handleCreateOrFinishCurve = (e: React.MouseEvent<HTMLDivElement>) => {
     if (e.currentTarget !== e.target) return;
 
+    const navbarHeight =
+      document.querySelector(".quicksql-nav-bar")!.clientHeight;
     const mousePositionRelativeToDiagramEditor = {
       x: e.clientX - canvasPosition.x,
-      y: e.clientY - canvasPosition.y,
+      y: e.clientY - canvasPosition.y - navbarHeight,
     };
     if (!creatingCurve) {
       dispatch(
