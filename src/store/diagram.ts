@@ -1,9 +1,9 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { enableMapSet, original } from "immer";
+import { original } from "immer";
 import { Column, Constraint, createColumn } from "../core/Column";
 import { DataType } from "../core/DataType";
 import { createRelation, Relation } from "../core/Relation";
-import { cloneTable, createTable, Table } from "../core/Table";
+import { cloneTable, createTable, findColumn, Table } from "../core/Table";
 import { Point, Position } from "../core/Position";
 import {
   findCurvePoints,
@@ -13,8 +13,6 @@ import {
   DEFAULT_TABLE_POSITION,
   findColumnPosition,
 } from "./diagram.helpers";
-
-enableMapSet();
 
 export interface DiagramState {
   tables: Record<string, Table>;
@@ -119,7 +117,8 @@ export const diagramSlice = createSlice({
     ) {
       const { tableId, columnId, columnName } = action.payload;
       if (tableId in state.tables) {
-        state.tables[tableId].columnMap.get(columnId)!.name = columnName;
+        const column = findColumn(state.tables[tableId], columnId);
+        column.name = columnName;
       }
     },
 
@@ -133,7 +132,8 @@ export const diagramSlice = createSlice({
     ) {
       const { tableId, columnId, columnType } = action.payload;
       if (tableId in state.tables) {
-        state.tables[tableId].columnMap.get(columnId)!.type = columnType;
+        const column = findColumn(state.tables[tableId], columnId);
+        column.type = columnType;
       }
     },
 
@@ -148,7 +148,8 @@ export const diagramSlice = createSlice({
     ) {
       const { tableId, columnId, constraint, value } = action.payload;
       if (tableId in state.tables) {
-        state.tables[tableId].columnMap.get(columnId)![constraint] = value;
+        const column = findColumn(state.tables[tableId], columnId);
+        column[constraint] = value;
       }
     },
 
@@ -157,7 +158,6 @@ export const diagramSlice = createSlice({
       if (tableId in state.tables) {
         const c = createColumn("new_column", "INT", tableId);
         state.tables[tableId].columns.push(c);
-        state.tables[tableId].columnMap.set(c.id, c);
       }
     },
 
@@ -239,9 +239,9 @@ export const diagramSlice = createSlice({
       const curvePoints = findCurvePoints(a, b);
       relation.curvePoints = curvePoints;
       state.relations[relation.id] = relation;
-      state.tables[fromTableId].columnMap.get(fromColumn.id)!.hasRelation =
-        true;
-      state.tables[toTableId].columnMap.get(toColumn.id)!.hasRelation = true;
+
+      findColumn(state.tables[fromTableId], fromColumn.id).hasRelation = true;
+      findColumn(state.tables[toTableId], toColumn.id).hasRelation = true;
       resetTempCurve(state as DiagramState);
     },
 

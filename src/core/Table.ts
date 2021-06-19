@@ -9,19 +9,11 @@ export interface Table {
   name: string;
   relations: Relation[];
   columns: Column[];
-  columnMap: Map<string, Column>;
 
   /**
    * for UI z-index
    */
   layer: number;
-}
-
-function buildColumnMap(columns: Column[]): Map<string, Column> {
-  return columns.reduce((acc, next) => {
-    acc.set(next.id, next);
-    return acc;
-  }, new Map<string, Column>());
 }
 
 export function createTable(name: string = "table_name"): Table {
@@ -35,7 +27,6 @@ export function createTable(name: string = "table_name"): Table {
     id,
     name,
     columns,
-    columnMap: buildColumnMap(columns),
     layer: 0,
     relations: [],
   };
@@ -55,6 +46,9 @@ export function cloneTable(table: Table): Table {
     ...table,
     id,
     columns: clonedColumns,
-    columnMap: buildColumnMap(clonedColumns),
   };
+}
+
+export function findColumn(table: Table, cid: string): Column {
+  return table.columns.find((i) => i.id === cid)!;
 }

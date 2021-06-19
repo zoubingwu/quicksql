@@ -11,6 +11,7 @@ import {
   moveRightBy,
 } from "../core/Position";
 import { Relation } from "../core/Relation";
+import { findColumn } from "../core/Table";
 import { actions, useAppSelector } from "../store";
 import {
   findCurvePoints,
@@ -131,12 +132,12 @@ export const RelationshipCurve: React.FC<{
       } as Record<string, Position>);
 
       const a = getColumnPositionData(
-        parentTable.columnMap.get(fromColumnId)!,
+        findColumn(parentTable, fromColumnId),
         parentTable.columns,
         ps
       );
       const b = getColumnPositionData(
-        childTable.columnMap.get(toColumnId)!,
+        findColumn(parentTable, toColumnId),
         childTable.columns,
         ps
       );
