@@ -137,7 +137,7 @@ export const RelationshipCurve: React.FC<{
         ps
       );
       const b = getColumnPositionData(
-        findColumn(parentTable, toColumnId),
+        findColumn(childTable, toColumnId),
         childTable.columns,
         ps
       );
