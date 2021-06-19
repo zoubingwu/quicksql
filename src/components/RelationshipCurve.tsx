@@ -37,8 +37,10 @@ export const TempRelationshipCurve: React.FC<{
     const top = start.y - realtimeEnd.y > 0 ? realtimeEnd.y + 2 : start.y;
     const width = getWidthBetweenPositions(start, realtimeEnd);
     const height = getHeightBetweenPositions(start, realtimeEnd);
-    const styles = { left, top, width, height, zIndex };
-
+    const styles = { left, top, width, height, zIndex: zIndex + 1 };
+    if (import.meta.env) {
+      Object.assign(styles, { border: "1px solid red" });
+    }
     return styles;
   }, [start, end, mousePosition, zIndex]);
 

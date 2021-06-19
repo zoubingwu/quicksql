@@ -11,6 +11,7 @@ import {
   getColumnPositionData,
   resetTempCurve,
   DEFAULT_TABLE_POSITION,
+  findColumnPosition,
 } from "./diagram.helpers";
 
 enableMapSet();
@@ -26,9 +27,15 @@ export interface DiagramState {
   tempRelationCurveStartColumn: Column | null;
   tempRelationCurveStartPosition: Position | null;
   tempRelationCurveEndPosition: Position | null;
+  canvasPosition: Position;
+  zoom: number;
 }
 
 const defaultTable = createTable();
+const defaultZoom = 100;
+const maxZoom = 150;
+const minZoom = 50;
+const zoomStep = 10;
 
 const initialState: DiagramState = {
   tables: {
@@ -38,16 +45,16 @@ const initialState: DiagramState = {
     [defaultTable.id]: DEFAULT_TABLE_POSITION,
   },
   relations: {},
-  layers: 1,
+  layers: 0,
   selectedTable: null,
   generatedCode: "",
   creatingRelationCurve: false,
   tempRelationCurveStartColumn: null,
   tempRelationCurveStartPosition: null,
   tempRelationCurveEndPosition: null,
+  canvasPosition: { x: 0, y: 0 },
+  zoom: defaultZoom,
 };
-
-type ColumnCellPosition = Pick<DOMRect, "x" | "y" | "width" | "height">;
 
 export const diagramSlice = createSlice({
   name: "diagram",
@@ -173,12 +180,17 @@ export const diagramSlice = createSlice({
       state,
       action: PayloadAction<{
         column: Column;
-        columnPosition: ColumnCellPosition;
         mousePosition: Position;
       }>
     ) {
-      const { column, columnPosition, mousePosition } = action.payload;
+      const { column, mousePosition } = action.payload;
       state.creatingRelationCurve = true;
+      const columnPosition = findColumnPosition({
+        tablePosition: state.positions[column.parentId],
+        columnIndex: state.tables[column.parentId].columns.findIndex(
+          (c) => c.id === column.id
+        ),
+      });
       state.tempRelationCurveStartColumn = column;
       state.tempRelationCurveStartPosition = {
         x: columnPosition.x + columnPosition.width,
@@ -191,7 +203,6 @@ export const diagramSlice = createSlice({
       state,
       action: PayloadAction<{
         column: Column;
-        columnPosition: ColumnCellPosition;
         mousePosition: Position;
       }>
     ) {
@@ -247,6 +258,36 @@ export const diagramSlice = createSlice({
     ) {
       const { id, points } = action.payload;
       state.relations[id].curvePoints = points;
+    },
+
+    setCanvasPosition(state, action: PayloadAction<Position>) {
+      state.canvasPosition.x = action.payload.x;
+      state.canvasPosition.y = action.payload.y;
+    },
+
+    zoomIn(state) {
+      const nextZoom = Math.min(state.zoom + zoomStep, maxZoom);
+      Object.values(state.positions).forEach((p) => {
+        p.x = (p.x / (state.zoom / 100)) * (nextZoom / 100);
+        p.y = (p.y / (state.zoom / 100)) * (nextZoom / 100);
+      });
+      state.zoom = nextZoom;
+    },
+    zoomOut(state) {
+      const nextZoom = Math.max(state.zoom - zoomStep, minZoom);
+      Object.values(state.positions).forEach((p) => {
+        p.x = (p.x / (state.zoom / 100)) * (nextZoom / 100);
+        p.y = (p.y / (state.zoom / 100)) * (nextZoom / 100);
+      });
+
+      state.zoom = nextZoom;
+    },
+    zoomToFit(state) {
+      state.zoom = defaultZoom;
+      Object.values(state.positions).forEach((p) => {
+        p.x = p.x / (state.zoom / 100);
+        p.y = p.y / (state.zoom / 100);
+      });
     },
   },
 });

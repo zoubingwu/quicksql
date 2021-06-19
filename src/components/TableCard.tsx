@@ -24,6 +24,9 @@ const MenuPopover: React.FC<{
   tableId: string;
 }> = ({ tableId }) => {
   const dispatch = useAppDispatch();
+  const tableCount = useAppSelector(
+    (state) => Object.values(state.diagram.tables).length
+  );
   const handleAddNewColumn = useCallback(() => {
     dispatch(actions.addNewColumn(tableId));
   }, [tableId]);
@@ -49,6 +52,7 @@ const MenuPopover: React.FC<{
         icon="trash"
         onClick={handleDeleteTable}
         intent="danger"
+        disabled={tableCount <= 1}
       />
     </Menu>
   );
@@ -132,10 +136,14 @@ const TableCard: React.FC<{
     [id, name]
   );
 
-  const handleMoveToTopLayer = useCallback(() => {
-    if (layer === maxLayer) return;
-    dispatch(actions.setTopLayer(id));
-  }, [id, layer, maxLayer]);
+  const handleMoveToTopLayer = useCallback(
+    (e: DraggableEvent) => {
+      e.stopPropagation();
+      if (layer === maxLayer) return;
+      dispatch(actions.setTopLayer(id));
+    },
+    [id, layer, maxLayer]
+  );
 
   const handleClickOnTable = useCallback(
     (e: React.MouseEvent<HTMLDivElement>) => {
@@ -148,6 +156,7 @@ const TableCard: React.FC<{
 
   const handleRelationCurveRecalc = useCallback(
     (e: DraggableEvent, data: DraggableData) => {
+      e.stopPropagation();
       relations.forEach((r) => {
         window.postMessage(
           {
@@ -199,6 +208,8 @@ const TableCard: React.FC<{
           </div>
 
           <Popover
+            minimal
+            popoverClassName="relative left-3"
             content={<MenuPopover tableId={id} />}
             position={BlueprintPosition.RIGHT_BOTTOM}
           >

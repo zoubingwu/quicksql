@@ -4,6 +4,7 @@ import { Column } from "../core/Column";
 import { actions, useAppDispatch, useAppSelector } from "../store";
 import clsx from "clsx";
 import { COLUMN_CELL_HEIGHT } from "../store/diagram.helpers";
+import { getObjectContainerRect } from "../core/Position";
 
 export const ColumnCell: React.FC<{
   data: Column;
@@ -17,7 +18,9 @@ export const ColumnCell: React.FC<{
   const start = useAppSelector(
     (state) => state.diagram.tempRelationCurveStartColumn
   );
-
+  const canvasPosition = useAppSelector(
+    (state) => state.diagram.canvasPosition
+  );
   const handleNameChange = useCallback(
     (value: string) => {
       if (value === name) return;
@@ -35,28 +38,14 @@ export const ColumnCell: React.FC<{
   const handleCreateOrFinishCurve = (e: React.MouseEvent<HTMLDivElement>) => {
     if (e.currentTarget !== e.target) return;
 
-    const parent = document
-      .querySelector(".quicksql-diagram-editor")!
-      .getBoundingClientRect();
-
-    const self = ref.current?.getBoundingClientRect()!;
-    const x = self.x - parent.x;
-    const y = self.y - parent.y;
     const mousePositionRelativeToDiagramEditor = {
-      x: e.clientX,
-      y: e.clientY - parent.y,
-    };
-    const columnPositionRelativeToDiagramEditor = {
-      x,
-      y,
-      width: self.width,
-      height: self.height,
+      x: e.clientX - canvasPosition.x,
+      y: e.clientY - canvasPosition.y,
     };
     if (!creatingCurve) {
       dispatch(
         actions.startCreatingRelationCurve({
           column: data,
-          columnPosition: columnPositionRelativeToDiagramEditor,
           mousePosition: mousePositionRelativeToDiagramEditor,
         })
       );
@@ -64,7 +53,6 @@ export const ColumnCell: React.FC<{
       dispatch(
         actions.stopCreatingRelationCurve({
           column: data,
-          columnPosition: columnPositionRelativeToDiagramEditor,
           mousePosition: mousePositionRelativeToDiagramEditor,
         })
       );

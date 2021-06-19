@@ -28,7 +28,6 @@ export const moveLeftBy = (p: Point, range: number): Point => [
   p[0] - range,
   p[1],
 ];
-
 export const moveRightBy = (p: Point, range: number): Point => [
   p[0] + range,
   p[1],
@@ -38,12 +37,19 @@ export const moveUpBy = (p: Point, range: number): Point => [
   p[0],
   p[1] - range,
 ];
-
 export const moveDownBy = (p: Point, range: number): Point => [
   p[0],
   p[1] + range,
 ];
 
 export const moveXTo = (p: Point, x: number): Point => [x, p[1]];
-
 export const moveYTo = (p: Point, y: number): Point => [p[0], y];
+
+export const ObjectContainerClass = "quicksql-diagram-objects-container";
+let objectContainer: Element;
+export const getObjectContainerRect = () => {
+  if (!objectContainer) {
+    objectContainer = document.querySelector(`.${ObjectContainerClass}`)!;
+  }
+  return objectContainer.getBoundingClientRect();
+};
