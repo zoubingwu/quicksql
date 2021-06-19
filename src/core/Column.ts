@@ -1,4 +1,3 @@
-import { immerable, produce } from "immer";
 import { nanoid } from "nanoid";
 import { DataType } from "./DataType";
 
@@ -29,64 +28,38 @@ export interface Constraint {
   FK?: boolean;
 }
 
-export class Column implements Constraint {
-  private [immerable] = true;
+export interface Column extends Constraint {
+  id: string;
+  name: string;
+  type: DataType;
+  parentId: string;
+  length?: number;
+  comment?: string;
+  hasRelation: boolean;
+}
 
-  public NN: boolean = false;
-  public PK: boolean = false;
-  public UN: boolean = false;
-  public AI: boolean = false;
-  public FK: boolean = false;
+export function createColumn(
+  name: string,
+  type: DataType,
+  parentId: string,
+  constraint: Constraint = {}
+): Column {
+  const id = nanoid();
+  return {
+    id,
+    name,
+    type,
+    parentId,
+    hasRelation: false,
+    ...constraint,
+  };
+}
 
-  public id: string;
-  public length?: number;
-  public comment: string = "";
-  public hasRelation: boolean = false;
-
-  constructor(
-    public name: string,
-    public type: DataType,
-    public parentId: string,
-    constraint?: Constraint
-  ) {
-    Object.assign(this, constraint);
-    this.id = nanoid();
-  }
-
-  clone(parentId: string) {
-    return produce(this, (draft) => {
-      draft.id = nanoid();
-      draft.parentId = parentId;
-    });
-  }
-
-  setName(name: string) {
-    return produce(this, (draft) => {
-      draft.name = name;
-    });
-  }
-
-  setComment(c: string) {
-    return produce(this, (draft) => {
-      draft.comment = c;
-    });
-  }
-
-  setType(type: DataType) {
-    return produce(this, (draft) => {
-      draft.type = type;
-    });
-  }
-
-  setConstraint(key: keyof Constraint, value: boolean) {
-    return produce(this, (draft) => {
-      draft[key] = value;
-    });
-  }
-
-  setHasRelation(val: boolean) {
-    return produce(this, (draft) => {
-      draft.hasRelation = val;
-    });
-  }
+export function cloneColumn(c: Column): Column {
+  const id = nanoid();
+  return {
+    ...c,
+    id,
+    hasRelation: false,
+  };
 }

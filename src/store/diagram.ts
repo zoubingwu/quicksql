@@ -1,9 +1,9 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { enableMapSet } from "immer";
-import { Column, Constraint } from "../core/Column";
+import { enableMapSet, original } from "immer";
+import { Column, Constraint, createColumn } from "../core/Column";
 import { DataType } from "../core/DataType";
-import { Relation } from "../core/Relation";
-import { Table } from "../core/Table";
+import { createRelation, Relation } from "../core/Relation";
+import { cloneTable, createTable, Table } from "../core/Table";
 import { Point, Position } from "../core/Position";
 import {
   findCurvePoints,
@@ -28,7 +28,7 @@ export interface DiagramState {
   tempRelationCurveEndPosition: Position | null;
 }
 
-const defaultTable = Table.create();
+const defaultTable = createTable();
 
 const initialState: DiagramState = {
   tables: {
@@ -54,7 +54,8 @@ export const diagramSlice = createSlice({
   initialState,
   reducers: {
     addNewTable(state) {
-      const newTable = Table.create().setLayer(state.layers + 1);
+      const newTable = createTable();
+      newTable.layer = state.layers + 1;
       const newPosition = findPositionWhenInsertNewTable(state.positions);
       state.tables[newTable.id] = newTable;
       state.positions[newTable.id] = newPosition;
@@ -72,7 +73,8 @@ export const diagramSlice = createSlice({
     duplicateTable(state, action: PayloadAction<string>) {
       const id = action.payload;
       if (id in state.tables) {
-        const newTable = state.tables[id].clone().setLayer(state.layers + 1);
+        const newTable = cloneTable(original(state.tables[id]) as Table);
+        newTable.layer++;
         const newPosition = findPositionWhenInsertNewTable(state.positions);
         state.tables[newTable.id] = newTable;
         state.positions[newTable.id] = newPosition;
@@ -96,7 +98,7 @@ export const diagramSlice = createSlice({
     ) {
       const { id, name } = action.payload;
       if (id in state.tables) {
-        state.tables[id] = state.tables[id].setName(name);
+        state.tables[id].name = name;
       }
     },
 
@@ -110,10 +112,7 @@ export const diagramSlice = createSlice({
     ) {
       const { tableId, columnId, columnName } = action.payload;
       if (tableId in state.tables) {
-        state.tables[tableId] = state.tables[tableId].changeColumnName(
-          columnId,
-          columnName
-        );
+        state.tables[tableId].columnMap.get(columnId)!.name = columnName;
       }
     },
 
@@ -127,10 +126,7 @@ export const diagramSlice = createSlice({
     ) {
       const { tableId, columnId, columnType } = action.payload;
       if (tableId in state.tables) {
-        state.tables[tableId] = state.tables[tableId].changeColumnDataType(
-          columnId,
-          columnType
-        );
+        state.tables[tableId].columnMap.get(columnId)!.type = columnType;
       }
     },
 
@@ -145,27 +141,23 @@ export const diagramSlice = createSlice({
     ) {
       const { tableId, columnId, constraint, value } = action.payload;
       if (tableId in state.tables) {
-        state.tables[tableId] = state.tables[tableId].changeColumnConstrain(
-          columnId,
-          constraint,
-          value
-        );
+        state.tables[tableId].columnMap.get(columnId)![constraint] = value;
       }
     },
 
     addNewColumn(state, action: PayloadAction<string>) {
       const tableId = action.payload;
       if (tableId in state.tables) {
-        state.tables[tableId] = state.tables[tableId].addNewColumn();
+        const c = createColumn("new_column", "INT", tableId);
+        state.tables[tableId].columns.push(c);
+        state.tables[tableId].columnMap.set(c.id, c);
       }
     },
 
     setTopLayer(state, action: PayloadAction<string>) {
       const id = action.payload;
       if (id in state.tables) {
-        const layer = state.layers + 1;
-        state.tables[id] = state.tables[id].setLayer(layer);
-        state.layers = layer;
+        state.tables[id].layer = state.layers + 1;
       }
     },
 
@@ -210,9 +202,8 @@ export const diagramSlice = createSlice({
         toColumn.parentId === fromColumn!.parentId ||
         relations.some(
           (r) =>
-            (r.fromColumnId === fromColumn.id &&
-              r.toColumnId === toColumn.id) ||
-            (r.fromColumnId === toColumn.id && r.toColumnId === toColumn.id)
+            (r.from.id === fromColumn.id && r.to.id === toColumn.id) ||
+            (r.from.id === toColumn.id && r.to.id === toColumn.id)
         )
       ) {
         resetTempCurve(state as DiagramState);
@@ -221,12 +212,7 @@ export const diagramSlice = createSlice({
 
       const fromTableId = fromColumn.parentId;
       const toTableId = toColumn.parentId;
-      let relation = new Relation(
-        fromTableId,
-        toTableId,
-        fromColumn.id,
-        toColumn.id
-      );
+      let relation = createRelation(fromColumn, toColumn);
 
       const a = getColumnPositionData(
         fromColumn as Column,
@@ -240,20 +226,11 @@ export const diagramSlice = createSlice({
       );
 
       const curvePoints = findCurvePoints(a, b);
-
-      relation = relation.setCurvePoints(curvePoints);
+      relation.curvePoints = curvePoints;
       state.relations[relation.id] = relation;
-      const editedTableA = state.tables[fromTableId].changeColumnRelationStatus(
-        fromColumn.id,
-        true
-      );
-      const editedTableB = state.tables[toTableId].changeColumnRelationStatus(
-        toColumn.id,
-        true
-      );
-
-      state.tables[fromTableId] = editedTableA;
-      state.tables[toTableId] = editedTableB;
+      state.tables[fromTableId].columnMap.get(fromColumn.id)!.hasRelation =
+        true;
+      state.tables[toTableId].columnMap.get(toColumn.id)!.hasRelation = true;
       resetTempCurve(state as DiagramState);
     },
 
@@ -269,7 +246,7 @@ export const diagramSlice = createSlice({
       }>
     ) {
       const { id, points } = action.payload;
-      state.relations[id] = state.relations[id].setCurvePoints(points);
+      state.relations[id].curvePoints = points;
     },
   },
 });

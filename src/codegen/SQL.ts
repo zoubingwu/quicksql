@@ -59,18 +59,12 @@ export class SQLTarget extends TargetLanguage {
       });
 
       relations
-        .filter((r) => r.fromTableId === table.id)
+        .filter((r) => r.from.parentId === table.id)
         .forEach((r) => {
           this.emitIndent(indent);
-          this.emitCode(
-            `FOREIGN KEY(${table.columnMap.get(r.fromColumnId)!.name}) `
-          );
-          const toTable = tables.find((t) => t.id === r.toTableId);
-          this.emitCodeLine(
-            `REFERENCES ${toTable!.name}(${
-              toTable!.columnMap.get(r.toColumnId)!.name
-            }),`
-          );
+          this.emitCode(`FOREIGN KEY(${r.from.name}) `);
+          const toTable = tables.find((t) => t.id === r.to.parentId);
+          this.emitCodeLine(`REFERENCES ${toTable!.name}(${r.to.name}),`);
         });
 
       this.emitIndent(indent);

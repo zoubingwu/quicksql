@@ -88,7 +88,7 @@ const TableCard: React.FC<{
   );
   const relations = useAppSelector((state) =>
     Object.values(state.diagram.relations).filter((r) =>
-      columns.some((c) => c.id === r.fromColumnId || c.id === r.toColumnId)
+      columns.some((c) => c.id === r.from.id || c.id === r.to.id)
     )
   );
   const maxLayer = useAppSelector((state) => state.diagram.layers);

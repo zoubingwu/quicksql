@@ -90,9 +90,9 @@ export const TempRelationshipCurve: React.FC<{
 export const RelationshipCurve: React.FC<{
   data: Relation;
 }> = ({ data }) => {
-  const { curvePoints, id, fromTableId, fromColumnId, toTableId, toColumnId } =
-    data;
-
+  const { curvePoints, id, from, to } = data;
+  const { id: fromColumnId, parentId: fromTableId } = from;
+  const { id: toColumnId, parentId: toTableId } = to;
   const [curve, setCurve] = useState<Point[]>(curvePoints);
   const parentTable = useAppSelector(
     (state) => state.diagram.tables[fromTableId]

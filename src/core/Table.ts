@@ -1,117 +1,60 @@
-import { immerable, produce } from "immer";
 import { nanoid } from "nanoid";
-import { Column, Constraint } from "./Column";
-import { DataType } from "./DataType";
+import { cloneColumn, Column, Constraint, createColumn } from "./Column";
 import { Relation } from "./Relation";
 
 export type ColumnMap = Record<string, Column>;
 
-export class Table {
-  private [immerable] = true;
-
-  static create(name: string = "table_name") {
-    let table = new Table(name, []);
-    table = table.addNewColumn(
-      new Column("id", "INT", table.id, { AI: true, PK: true, NN: true })
-    );
-    table = table.addNewColumn(new Column("created_at", "DATETIME", table.id));
-    table = table.addNewColumn(new Column("updated_at", "DATETIME", table.id));
-
-    return table;
-  }
-
-  public columnMap: Map<string, Column>;
-  public id: string;
-  public relations: Relation[] = [];
+export interface Table {
+  id: string;
+  name: string;
+  relations: Relation[];
+  columns: Column[];
+  columnMap: Map<string, Column>;
 
   /**
    * for UI z-index
    */
-  public layer: number;
+  layer: number;
+}
 
-  constructor(public name: string, public columns: Column[]) {
-    this.columnMap = this.columns.reduce((acc, next) => {
-      acc.set(next.id, next);
-      return acc;
-    }, new Map<string, Column>());
-    this.id = nanoid();
-  }
+function buildColumnMap(columns: Column[]): Map<string, Column> {
+  return columns.reduce((acc, next) => {
+    acc.set(next.id, next);
+    return acc;
+  }, new Map<string, Column>());
+}
 
-  public clone() {
-    let newTable = new Table(this.name, []);
+export function createTable(name: string = "table_name"): Table {
+  const id = nanoid();
+  const columns = [
+    createColumn("id", "INT", id, { AI: true, PK: true, NN: true }),
+    createColumn("created_at", "DATETIME", id),
+    createColumn("updated_at", "DATETIME", id),
+  ];
+  const table = {
+    id,
+    name,
+    columns,
+    columnMap: buildColumnMap(columns),
+    layer: 0,
+    relations: [],
+  };
 
-    this.columns.forEach((c) => {
-      newTable = newTable.addNewColumn(c.clone(newTable.id));
-    });
+  return table;
+}
 
-    return newTable;
-  }
+export function cloneTable(table: Table): Table {
+  const id = nanoid();
+  const clonedColumns = table.columns.map((c) => {
+    const column = cloneColumn(c);
+    column.parentId = id;
+    return column;
+  });
 
-  public setName(name: string) {
-    return produce(this, (draft) => {
-      draft.name = name;
-    });
-  }
-
-  public setLayer(n: number) {
-    return produce(this, (draft) => {
-      draft.layer = n;
-    });
-  }
-
-  public changeColumnName(columnId: string, name: string) {
-    return produce(this, (draft) => {
-      const i = draft.columns.findIndex((c) => c.id === columnId);
-      if (i > -1) {
-        const editedColumn = draft.columns[i].setName(name);
-        draft.columns.splice(i, 1, editedColumn);
-        draft.columnMap.set(editedColumn.id, editedColumn);
-      }
-    });
-  }
-
-  public addNewColumn(column?: Column) {
-    return produce(this, (draft) => {
-      const newColumn = column || new Column("new_column", "INT", this.id);
-      draft.columns.push(newColumn);
-      draft.columnMap.set(newColumn.id, newColumn);
-    });
-  }
-
-  public changeColumnDataType(columnId: string, type: DataType) {
-    return produce(this, (draft) => {
-      const i = draft.columns.findIndex((c) => c.id === columnId);
-      if (i > -1) {
-        const editedColumn = draft.columns[i].setType(type);
-        draft.columns.splice(i, 1, editedColumn);
-        draft.columnMap.set(editedColumn.id, editedColumn);
-      }
-    });
-  }
-
-  public changeColumnConstrain(
-    columnId: string,
-    constrain: keyof Constraint,
-    value: boolean
-  ) {
-    return produce(this, (draft) => {
-      const i = draft.columns.findIndex((c) => c.id === columnId);
-      if (i > -1) {
-        const editedColumn = draft.columns[i].setConstraint(constrain, value);
-        draft.columns.splice(i, 1, editedColumn);
-        draft.columnMap.set(editedColumn.id, editedColumn);
-      }
-    });
-  }
-
-  public changeColumnRelationStatus(columnId: string, val: boolean) {
-    return produce(this, (draft) => {
-      const i = draft.columns.findIndex((c) => c.id === columnId);
-      if (i > -1) {
-        const editedColumn = draft.columns[i].setHasRelation(val);
-        draft.columns.splice(i, 1, editedColumn);
-        draft.columnMap.set(editedColumn.id, editedColumn);
-      }
-    });
-  }
+  return {
+    ...table,
+    id,
+    columns: clonedColumns,
+    columnMap: buildColumnMap(clonedColumns),
+  };
 }
