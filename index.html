@@ -27,16 +27,14 @@
           var script = document.createElement('script');
           script.src = 'https://www.googletagmanager.com/gtag/js?id=G-B7SD9G36LH';
           script.async = true;
+          document.head.appendChild(script);
 
           window.dataLayer = window.dataLayer || [];
           function gtag() {
             dataLayer.push(arguments);
           }
           gtag("js", new Date());
-
           gtag("config", "G-B7SD9G36LH");
-
-          document.head.appendChild(script);
         };
       })()
     </script>
