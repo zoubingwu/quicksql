@@ -66,7 +66,7 @@ export function Curve({
         stroke="black"
         fill="transparent"
         {...props}
-        marker-end="url(#head)"
+        markerEnd="url(#head)"
         strokeDasharray="11,5"
       />
 
