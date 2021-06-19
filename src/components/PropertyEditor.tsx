@@ -259,25 +259,27 @@ const TableProperyEditor: React.FC<React.HTMLAttributes<HTMLDivElement>> = ({
       </div>
       <div className="p-2">
         <div className={editorRowTitleClassName}>Columns</div>
-        {columns.map((column) => {
-          return (
-            <Popover
-              onOpened={(e) => handleSavingPopoverStatus(true)}
-              onClosed={(e) => handleSavingPopoverStatus(false)}
-              key={column.id}
-              content={
-                <ColumnPopover column={column} tableId={selectedTable.id} />
-              }
-              inheritDarkTheme={false}
-              placement="left"
-            >
-              <div className="flex justify-between cursor-pointer mb-1">
-                <span>{column.name}</span>
-                <span>{column.type.toUpperCase()}</span>
-              </div>
-            </Popover>
-          );
-        })}
+        <div className="flex flex-col">
+          {columns.map((column) => {
+            return (
+              <Popover
+                onOpened={(e) => handleSavingPopoverStatus(true)}
+                onClosed={(e) => handleSavingPopoverStatus(false)}
+                key={column.id}
+                content={
+                  <ColumnPopover column={column} tableId={selectedTable.id} />
+                }
+                inheritDarkTheme={false}
+                placement="left"
+              >
+                <div className="flex justify-between cursor-pointer mb-1">
+                  <span>{column.name}</span>
+                  <span>{column.type.toUpperCase()}</span>
+                </div>
+              </Popover>
+            );
+          })}
+        </div>
         <div
           onClick={handleAddNewColumn}
           className="cursor-pointer flex justify-center rounded border border-cool-gray-700 py-1"
@@ -299,7 +301,7 @@ const TableProperyEditor: React.FC<React.HTMLAttributes<HTMLDivElement>> = ({
 export const PropertyEditor: React.FC = () => {
   const selectedTable = useAppSelector((state) => state.diagram.selectedTable);
   const className = clsx(
-    "quicksql-property-editor absolute right-0 w-360px bg-dark-200 text-light-900 h-full border-r-1 border-cool-gray-700",
+    "quicksql-property-editor w-360px bg-dark-200 text-light-900 h-full border-r-1 border-cool-gray-700",
     Classes.DARK
   );
   const handleClick = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
