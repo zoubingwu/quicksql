@@ -1,8 +1,9 @@
 node_modules
 dist
-ui
+bin
 
 .idea
 .vscode
 
 *.http
+*.log

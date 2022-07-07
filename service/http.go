@@ -43,9 +43,9 @@ func getDatabase(c echo.Context) error {
 	if err != nil {
 		return err
 	}
-	defer db.Close()
 
 	conn := &Conn{db: db}
+	defer conn.Close()
 
 	rows, err := conn.ShowTables()
 	if err != nil {

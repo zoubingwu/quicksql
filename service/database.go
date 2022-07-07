@@ -10,7 +10,7 @@ type Conn struct {
 	db *sql.DB
 }
 
-type Object = map[string]any
+type Object map[string]any
 
 func (c *Conn) Query(s string) ([]Object, error) {
 	rows, err := c.db.Query(s)
@@ -110,4 +110,8 @@ func (c *Conn) ShowTables() ([]Object, error) {
 	}
 
 	return rows, nil
+}
+
+func (c *Conn) Close() {
+	c.db.Close()
 }

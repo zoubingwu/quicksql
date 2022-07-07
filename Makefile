@@ -1,8 +1,11 @@
 build:
-	go build
+	go build -o bin/quicksql app/main.go
 
-build-ui:
-	cd app && pnpm run build
+build-local:
+	pnpm --filter "@quicksql/local" build
+
+build-remote:
+	pnpm --filter "@quicksql/remote" build
 
 dev:
-	go run main.go start
+	go run app/main.go start
