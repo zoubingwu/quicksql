@@ -2,8 +2,16 @@ package cmd
 
 import (
 	"fmt"
-	"github.com/spf13/cobra"
 	"os"
+
+	"github.com/spf13/cobra"
+	"github.com/zoubingwu/quicksql/service"
+)
+
+var (
+	Host string
+	Port int
+	User string
 )
 
 var rootCmd = &cobra.Command{
@@ -11,8 +19,16 @@ var rootCmd = &cobra.Command{
 	Short:   "QuickSQL is a collaborative SQL Editor",
 	Version: Version,
 	Run: func(cmd *cobra.Command, args []string) {
-		cmd.Help()
+		service.NewServer(Host, Port, User)
 	},
+}
+
+func init() {
+	rootCmd.PersistentFlags().BoolP("help", "", false, "help for this command")
+	rootCmd.Flags().StringVarP(&Host, "host", "h", "", "Host (required)")
+	rootCmd.Flags().IntVarP(&Port, "port", "P", 3306, "Port (required)")
+	rootCmd.Flags().StringVarP(&User, "user", "u", "root", "User (required)")
+	rootCmd.MarkFlagRequired("host")
 }
 
 func Execute() {

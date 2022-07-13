@@ -1,5 +1,5 @@
 build:
-	go build -o bin/quicksql app/main.go
+	go build -o bin/qs app/main.go
 
 build-local:
 	pnpm --filter "@quicksql/local" build
