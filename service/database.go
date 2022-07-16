@@ -2,9 +2,7 @@ package service
 
 import (
 	"database/sql"
-
 	_ "github.com/go-sql-driver/mysql"
-	"github.com/samber/lo"
 )
 
 type Connection struct {
@@ -88,31 +86,16 @@ func (c *Connection) Query(s string) ([]Object, error) {
 	return finalRows, nil
 }
 
-func (c *Connection) ShowDatabases() ([]string, error) {
-	rows, err := c.Query("SHOW DATABASES")
+func (c *Connection) QueryOne(s string) (Object, error) {
+	rows, err := c.Query(s)
 	if err != nil {
 		return nil, err
 	}
-
-	return lo.Map[Object, string](rows, func(t Object, i int) string {
-		if t, ok := rows[i]["Database"].(string); ok {
-			return t
-		}
-		return ""
-	}), nil
+	return rows[0], err
 }
 
-func (c *Connection) ShowTables() ([]Object, error) {
-	rows, err := c.Query("SHOW TABLES")
-	if err != nil {
-		return nil, err
-	}
-
-	return rows, nil
-}
-
-func (c *Connection) Close() {
-	c.db.Close()
+func (c *Connection) Close() error {
+	return c.db.Close()
 }
 
 func (c *Connection) Ping() error {

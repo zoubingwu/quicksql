@@ -97,52 +97,12 @@ func NewServer(host string, port int, user string) {
 	e.GET("/assets/*", echo.WrapHandler(assets))
 
 	apis := e.Group("/api")
-	apis.POST("/ping", h.Ping)
+	apis.GET("/ping", h.Ping)
 	apis.GET("/databases", h.ShowDatabases)
+	apis.GET("/tables", h.ShowTables)
+	apis.GET("/tables/describe", h.DescribeTable)
+	apis.GET("/tables/select", h.SelectFromTable)
 
 	fmt.Println("You can now open SQL editor in your browser at http://localhost:9888")
 	e.Logger.Fatal(e.Start(":9888"))
-}
-
-type Response struct {
-	Message string `json:"message"`
-	Code    int    `json:"code"`
-}
-
-func NewResponse(message string, code int) *Response {
-	return &Response{Message: message, Code: code}
-}
-
-func ResponseOk() *Response {
-	return NewResponse("ok", 0)
-}
-
-func ResponseError(err error) *Response {
-	return NewResponse(err.Error(), 10000)
-}
-
-type Handler struct {
-	db *Connection
-}
-
-func NewHandlers(db *sql.DB) *Handler {
-	return &Handler{db: &Connection{db: db}}
-}
-
-func (h *Handler) Ping(c echo.Context) error {
-	err := h.db.Ping()
-	if err != nil {
-		return c.JSON(http.StatusBadRequest, ResponseError(err))
-	}
-	return c.JSON(http.StatusOK, ResponseOk())
-}
-
-func (h *Handler) ShowDatabases(c echo.Context) error {
-	dbs, err := h.db.ShowDatabases()
-	if err != nil {
-		return c.JSON(http.StatusBadRequest, ResponseError(err))
-	}
-	return c.JSON(http.StatusOK, Object{
-		"data": dbs,
-	})
 }
