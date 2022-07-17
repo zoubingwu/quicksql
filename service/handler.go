@@ -47,11 +47,13 @@ type DbTarget struct {
 }
 
 func (h *Handler) ShowTables(c echo.Context) error {
-	row, err := h.conn.QueryOne(fmt.Sprintf("SHOW TABLES FROM `%s`", c.Param("db")))
+	rows, err := h.conn.Query(fmt.Sprintf("SHOW TABLES FROM `%s`", c.Param("db")))
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, ResponseError(err))
 	}
-	data := lo.Values(row)
+	data := lo.Map[Object, string](rows, func(r Object, _ int) string {
+		return lo.Values[string, any](r)[0].(string)
+	})
 	return c.JSON(http.StatusOK, NewResponseWithData(data))
 }
 
@@ -153,7 +155,7 @@ func NewTableDescription(data Object) (*TableDescription, error) {
 		case "Type":
 			res.Type = val.(string)
 		case "Null":
-			res.Nullable = val.(string) == "Yes"
+			res.Nullable = val.(string) == "YES"
 		case "Key":
 			res.Primary = val.(string) == "PRI"
 		case "DEFAULT":
