@@ -6,6 +6,7 @@ import (
 	"io"
 	"net/http"
 	"net/http/httptest"
+	"strings"
 	"testing"
 
 	"github.com/DATA-DOG/go-sqlmock"
@@ -18,7 +19,7 @@ func TestHandler_Ping(t *testing.T) {
 	require.Nil(t, err)
 	defer db.Close()
 
-	h := NewHandlers(db)
+	h := NewHandler(db)
 	ctx, rec := setupContext("/ping", http.MethodGet, nil)
 
 	require.NoError(t, h.Ping(ctx))
@@ -30,7 +31,7 @@ func TestHandler_ShowDatabases(t *testing.T) {
 	db, mock, err := sqlmock.New()
 	require.Nil(t, err)
 
-	h := NewHandlers(db)
+	h := NewHandler(db)
 	ctx, rec := setupContext("/databases", http.MethodGet, nil)
 
 	rows := mock.NewRows([]string{"Database"}).AddRow("mysql").
@@ -52,7 +53,7 @@ func TestHandler_ShowTables(t *testing.T) {
 	db, mock, err := sqlmock.New()
 	require.Nil(t, err)
 
-	h := NewHandlers(db)
+	h := NewHandler(db)
 	ctx, rec := setupContext("/tables", http.MethodGet, nil)
 	ctx.SetParamNames("db")
 	ctx.SetParamValues("test_db")
@@ -75,7 +76,7 @@ func TestHandler_DescribeTable(t *testing.T) {
 	db, mock, err := sqlmock.New()
 	require.Nil(t, err)
 
-	h := NewHandlers(db)
+	h := NewHandler(db)
 	ctx, rec := setupContext("/tables/describe", http.MethodGet, nil)
 	ctx.QueryParams().Add("db", "test_db")
 	ctx.QueryParams().Add("table", "user")
@@ -101,7 +102,7 @@ func TestHandler_SelectFromTable(t *testing.T) {
 	db, mock, err := sqlmock.New()
 	require.Nil(t, err)
 
-	h := NewHandlers(db)
+	h := NewHandler(db)
 	ctx, rec := setupContext("/tables/select", http.MethodGet, nil)
 	ctx.QueryParams().Add("db", "test_db")
 	ctx.QueryParams().Add("table", "user")
@@ -129,13 +130,39 @@ func TestHandler_SelectFromTable(t *testing.T) {
 	assertJson(t, data, bytes.TrimSpace(rec.Body.Bytes()))
 }
 
+func TestHandler_ExecQuery(t *testing.T) {
+	db, mock, err := sqlmock.New()
+	require.Nil(t, err)
+
+	h := NewHandler(db)
+	ctx, rec := setupContext("/sql", http.MethodPost, strings.NewReader(`{"query":"SELECT * FROM test_db.user ORDER BY id DESC LIMIT 2"}`))
+	rows := mock.NewRows([]string{"id", "name"}).
+		AddRow(1, "test1").
+		AddRow(2, "test2")
+
+	mock.ExpectQuery("^SELECT \\* FROM test_db.user ORDER BY id DESC LIMIT 2$").WillReturnRows(rows)
+
+	require.NoError(t, h.ExecQuery(ctx))
+	data := ResponseWithData{
+		Response: Response{Message: "ok", Code: 0},
+		Data: []struct {
+			Id   string `json:"id"`
+			Name string `json:"name"`
+		}{
+			{Id: "1", Name: "test1"},
+			{Id: "2", Name: "test2"},
+		},
+	}
+	assertJson(t, data, bytes.TrimSpace(rec.Body.Bytes()))
+}
+
 func setupContext(path string, method string, body io.Reader) (echo.Context, *httptest.ResponseRecorder) {
 	e := echo.New()
 	req := httptest.NewRequest(method, "/", body)
 	req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
 	rec := httptest.NewRecorder()
 	ctx := e.NewContext(req, rec)
-	ctx.SetPath(path)
+	ctx.SetPath("/api" + path)
 
 	return ctx, rec
 }

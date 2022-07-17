@@ -14,7 +14,7 @@ type Handler struct {
 	conn *Connection
 }
 
-func NewHandlers(db *sql.DB) *Handler {
+func NewHandler(db *sql.DB) *Handler {
 	return &Handler{conn: &Connection{db: db}}
 }
 
@@ -105,6 +105,26 @@ func (h *Handler) SelectFromTable(c echo.Context) error {
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, ResponseError(err))
 	}
+	return c.JSON(http.StatusOK, NewResponseWithData(rows))
+}
+
+type ExecQueryBody struct {
+	Query string `json:"query"`
+}
+
+func (h *Handler) ExecQuery(c echo.Context) error {
+	fmt.Println(c.Path())
+	body := new(ExecQueryBody)
+	if err := c.Bind(body); err != nil {
+		return c.JSON(http.StatusBadRequest, ResponseError(err))
+	}
+
+	fmt.Println(body.Query)
+	rows, err := h.conn.Query(body.Query)
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, ResponseError(err))
+	}
+
 	return c.JSON(http.StatusOK, NewResponseWithData(rows))
 }
 

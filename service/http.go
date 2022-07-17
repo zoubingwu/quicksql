@@ -76,7 +76,7 @@ func NewServer(host string, port int, user string) {
 		}
 	}(db)
 
-	h := NewHandlers(db)
+	h := NewHandler(db)
 
 	e := echo.New()
 	e.HideBanner = true
@@ -102,6 +102,7 @@ func NewServer(host string, port int, user string) {
 	apis.GET("/tables", h.ShowTables)
 	apis.GET("/tables/describe", h.DescribeTable)
 	apis.GET("/tables/select", h.SelectFromTable)
+	apis.POST("/sql", h.ExecQuery)
 
 	fmt.Println("You can now open SQL editor in your browser at http://localhost:9888")
 	e.Logger.Fatal(e.Start(":9888"))
