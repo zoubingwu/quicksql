@@ -26,8 +26,8 @@ var rootCmd = &cobra.Command{
 func init() {
 	rootCmd.PersistentFlags().BoolP("help", "", false, "help for this command")
 	rootCmd.Flags().StringVarP(&Host, "host", "h", "", "Host (required)")
-	rootCmd.Flags().IntVarP(&Port, "port", "P", 3306, "Port (required)")
-	rootCmd.Flags().StringVarP(&User, "user", "u", "root", "User (required)")
+	rootCmd.Flags().IntVarP(&Port, "port", "P", 3306, "Port")
+	rootCmd.Flags().StringVarP(&User, "user", "u", "root", "User")
 	rootCmd.MarkFlagRequired("host")
 }
 
