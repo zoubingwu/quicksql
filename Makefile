@@ -6,8 +6,5 @@ build:
 build-local:
 	pnpm --filter "@quicksql/local" build
 
-build-remote:
-	pnpm --filter "@quicksql/remote" build
-
 dev:
 	go run main.go -h localhost
