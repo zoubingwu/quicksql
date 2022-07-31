@@ -2,6 +2,7 @@ package service
 
 import (
 	"database/sql"
+
 	_ "github.com/go-sql-driver/mysql"
 )
 
@@ -30,16 +31,12 @@ func (c *Connection) Query(s string) ([]Object, error) {
 			switch v.DatabaseTypeName() {
 			case "VARCHAR", "TEXT", "UUID", "TIMESTAMP":
 				scanArgs[i] = new(sql.NullString)
-				break
 			case "BOOL":
 				scanArgs[i] = new(sql.NullBool)
-				break
 			case "INT":
 				scanArgs[i] = new(sql.NullInt64)
-				break
 			case "DOUBLE":
 				scanArgs[i] = new(sql.NullFloat64)
-				break
 			default:
 				scanArgs[i] = new(sql.NullString)
 			}

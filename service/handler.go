@@ -32,7 +32,7 @@ func (h *Handler) ShowDatabases(c echo.Context) error {
 		return c.JSON(http.StatusBadRequest, ResponseError(err))
 	}
 
-	dbs := lo.Map[Object, string](rows, func(t Object, i int) string {
+	dbs := lo.Map(rows, func(t Object, i int) string {
 		if t, ok := rows[i]["Database"].(string); ok {
 			return t
 		}
@@ -51,8 +51,8 @@ func (h *Handler) ShowTables(c echo.Context) error {
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, ResponseError(err))
 	}
-	data := lo.Map[Object, string](rows, func(r Object, _ int) string {
-		return lo.Values[string, any](r)[0].(string)
+	data := lo.Map(rows, func(r Object, _ int) string {
+		return lo.Values(r)[0].(string)
 	})
 	return c.JSON(http.StatusOK, NewResponseWithData(data))
 }
@@ -74,7 +74,7 @@ func (h *Handler) DescribeTable(c echo.Context) error {
 		return c.JSON(http.StatusBadRequest, ResponseError(err))
 	}
 
-	tds := lo.Map[Object, *TableDescription](rows, func(row Object, i int) *TableDescription {
+	tds := lo.Map(rows, func(row Object, i int) *TableDescription {
 		r, _ := NewTableDescription(row)
 		return r
 	})
